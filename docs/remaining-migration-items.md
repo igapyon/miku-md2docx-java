@@ -18,6 +18,7 @@ Recommended first command after resuming:
 ```bash
 mvn test
 scripts/compare-node-java-cli.sh
+scripts/roundtrip-md-docx-md.sh
 ```
 
 Recommended next implementation slice:
@@ -29,6 +30,8 @@ Recommended next implementation slice:
   edge cases before implementing each behavior.
 - Treat the committed helper-class split and parity coverage as the current
   checkpoint before starting larger parser changes.
+- Keep the focused Markdown -> DOCX -> Markdown smoke current as the first
+  cross-tool round-trip guard.
 
 ## Completed
 
@@ -61,6 +64,8 @@ Recommended next implementation slice:
 - First-cut Markdown block handling for headings, paragraphs, lists, tables, code blocks, blockquotes, horizontal rules, and front matter.
 - First-cut inline handling for bold, italic, strike, inline code, links, limited HTML, and images.
 - Focused JUnit tests.
+- Focused Markdown -> DOCX -> Markdown round-trip smoke script using
+  `miku-docx2md-java` as the reverse converter.
 - Upstream class, CLI, and test mapping documents.
 - miku-soft basic documents copied into `docs/`.
 
@@ -71,6 +76,8 @@ Recommended next implementation slice:
 - Complete image embedding parity for all upstream image cases.
 - Add byte / XML-level fixture parity tests from upstream.
 - Keep Node-vs-Java parity checks current as upstream fixtures evolve.
+- Broaden Markdown -> DOCX -> Markdown round-trip coverage after the core
+  parser / renderer behavior is stable enough for more source fixtures.
 - No previously identified focused parser / renderer parity case remains open.
 - Add new focused comparison cases when new upstream `remark` / `remark-gfm`
   edge cases are found.
