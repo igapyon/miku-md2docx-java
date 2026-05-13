@@ -8,7 +8,10 @@ Stop point:
 - Maven plugin is not included.
 - Node-vs-Java sample summary parity is established through
   `scripts/compare-node-java-cli.sh`.
-- Full DOCX XML parity is not established yet.
+- Focused Node-vs-Java DOCX XML parity checks have been expanded and pass for
+  the currently identified parser / renderer edge cases.
+- Full upstream `remark` / `remark-gfm` parity is still tracked as migration
+  work because new edge cases may be found during upstream follow-up.
 
 Recommended first command after resuming:
 
@@ -24,6 +27,8 @@ Recommended next implementation slice:
   `MikuMd2docxCore`.
 - Add focused Node-vs-Java comparison cases for remaining remark / remark-gfm
   edge cases before implementing each behavior.
+- Treat the committed helper-class split and parity coverage as the current
+  checkpoint before starting larger parser changes.
 
 ## Completed
 
@@ -71,8 +76,8 @@ Recommended next implementation slice:
   edge cases are found.
 - Decide whether the current Java line scanner should evolve into a small
   Java AST/token layer for remaining remark parity.
-- Commit the current helper-class split and parity coverage checkpoint before
-  starting larger parser changes.
+- Helper-class split and focused parity coverage have been committed as the
+  current checkpoint.
 
 ## Follow-up Candidates
 
