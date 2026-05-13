@@ -211,6 +211,280 @@ class MikuMd2docxCoreTest {
     }
 
     @Test
+    void rendersGfmAutolinks() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "# Autolink",
+                "",
+                "Visit https://example.com/a?b=1 and www.example.org/path.",
+                "",
+                "Mail dev@example.com."));
+        Map<String, byte[]> entries = unzip(result.getDocx());
+        String documentXml = new String(entries.get("word/document.xml"), StandardCharsets.UTF_8);
+        String relsXml = new String(entries.get("word/_rels/document.xml.rels"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("<w:hyperlink r:id=\"rId1\""));
+        assertTrue(documentXml.contains("<w:t>www.example.org/path</w:t>"));
+        assertTrue(relsXml.contains("Target=\"https://example.com/a?b=1\" TargetMode=\"External\""));
+        assertTrue(relsXml.contains("Target=\"http://www.example.org/path\" TargetMode=\"External\""));
+        assertTrue(relsXml.contains("Target=\"mailto:dev@example.com\" TargetMode=\"External\""));
+        assertEquals(3, result.getSummary().links);
+        assertEquals(3, result.getSummary().externalLinks);
+    }
+
+    @Test
+    void rendersSetextHeadingsAndMarkdownBreaks() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "Setext One",
+                "==========",
+                "",
+                "Setext Two",
+                "----------",
+                "",
+                "Soft line",
+                "continues here.",
+                "",
+                "Hard break with spaces  ",
+                "continues after break.",
+                "",
+                "Hard break with slash\\",
+                "continues after slash."));
+        String documentXml = new String(unzip(result.getDocx()).get("word/document.xml"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("<w:pStyle w:val=\"Heading1\"/>"));
+        assertTrue(documentXml.contains("<w:pStyle w:val=\"Heading2\"/>"));
+        assertTrue(documentXml.contains("Soft line\ncontinues here."));
+        assertTrue(documentXml.contains("<w:br/>"));
+        assertEquals(2, result.getSummary().headings);
+        assertEquals(3, result.getSummary().paragraphs);
+        assertEquals(0, result.getSummary().horizontalRules);
+    }
+
+    @Test
+    void rendersTildeFencedCodeBlocks() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "# Tilde Code",
+                "",
+                "~~~txt",
+                "tilde one",
+                "tilde two",
+                "~~~",
+                "",
+                "after"));
+        String documentXml = new String(unzip(result.getDocx()).get("word/document.xml"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("<w:pStyle w:val=\"Code\"/>"));
+        assertTrue(documentXml.contains("<w:t>tilde one</w:t>"));
+        assertTrue(documentXml.contains("<w:t>tilde two</w:t>"));
+        assertEquals(1, result.getSummary().codeBlocks);
+        assertEquals(1, result.getSummary().paragraphs);
+    }
+
+    @Test
+    void rendersIndentedCodeBlocks() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "# Indented Code",
+                "",
+                "    alpha",
+                "    beta",
+                "",
+                "after"));
+        String documentXml = new String(unzip(result.getDocx()).get("word/document.xml"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("<w:pStyle w:val=\"Code\"/>"));
+        assertTrue(documentXml.contains("<w:t>alpha</w:t>"));
+        assertTrue(documentXml.contains("<w:t>beta</w:t>"));
+        assertEquals(1, result.getSummary().codeBlocks);
+        assertEquals(1, result.getSummary().paragraphs);
+    }
+
+    @Test
+    void rendersReferenceDefinitionsLikeUpstream() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "# Reference Case",
+                "",
+                "See [Example][site] and [shortcut].",
+                "",
+                "![Logo][logo]",
+                "",
+                "[site]: https://example.com/ref \"Example title\"",
+                "[shortcut]: https://example.com/shortcut",
+                "[logo]: images/logo.png \"Logo title\""));
+        String documentXml = new String(unzip(result.getDocx()).get("word/document.xml"), StandardCharsets.UTF_8);
+        String relsXml = new String(unzip(result.getDocx()).get("word/_rels/document.xml.rels"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("<w:t>Example</w:t>"));
+        assertTrue(documentXml.contains("<w:t>shortcut</w:t>"));
+        assertFalse(documentXml.contains("[site]:"));
+        assertFalse(documentXml.contains("https://example.com/ref"));
+        assertFalse(documentXml.contains("![Logo][logo]"));
+        assertFalse(relsXml.contains("https://example.com/ref"));
+        assertEquals(0, result.getSummary().links);
+        assertEquals(0, result.getSummary().images);
+        assertEquals(2, result.getSummary().paragraphs);
+    }
+
+    @Test
+    void rendersEscapesAndEntitiesLikeUpstream() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "# Escapes &amp; Entities",
+                "",
+                "Literal \\*not emphasis\\* and \\[not link\\].",
+                "",
+                "Entity &amp; &copy; &#x41; &#65; &lt;tag&gt;."));
+        String documentXml = new String(unzip(result.getDocx()).get("word/document.xml"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("<w:t>Escapes &amp; Entities</w:t>"));
+        assertTrue(documentXml.contains("<w:t>Literal *not emphasis* and [not link].</w:t>"));
+        assertTrue(documentXml.contains("<w:t>Entity &amp; \u00a9 A A &lt;tag&gt;.</w:t>"));
+        assertFalse(documentXml.contains("<w:i/>"));
+        assertEquals(1, result.getSummary().headings);
+        assertEquals(2, result.getSummary().paragraphs);
+    }
+
+    @Test
+    void rendersNestedBlockquotesLikeUpstream() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "# Nested Quote",
+                "",
+                "> Outer line",
+                "> continues",
+                ">",
+                "> > Inner line",
+                "> > Inner **bold**",
+                ">",
+                "> Back outer"));
+        String documentXml = new String(unzip(result.getDocx()).get("word/document.xml"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("<w:pStyle w:val=\"Quote\"/>"));
+        assertTrue(documentXml.contains("Outer line\ncontinues"));
+        assertTrue(documentXml.contains("Inner line\nInner "));
+        assertTrue(documentXml.contains("<w:b/>"));
+        assertTrue(documentXml.contains("<w:t>Back outer</w:t>"));
+        assertEquals(1, result.getSummary().blockquotes);
+        assertEquals(3, result.getSummary().paragraphs);
+    }
+
+    @Test
+    void ignoresBlockquoteListAndCodeChildrenLikeUpstream() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "# Quote Children",
+                "",
+                "> Intro",
+                ">",
+                "> - ignored list",
+                "> - ignored second",
+                ">",
+                "> ```txt",
+                "> ignored code",
+                "> ```",
+                ">",
+                "> Outro"));
+        String documentXml = new String(unzip(result.getDocx()).get("word/document.xml"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("<w:t>Intro</w:t>"));
+        assertTrue(documentXml.contains("<w:t>Outro</w:t>"));
+        assertFalse(documentXml.contains("ignored list"));
+        assertFalse(documentXml.contains("ignored code"));
+        assertEquals(1, result.getSummary().blockquotes);
+        assertEquals(2, result.getSummary().paragraphs);
+        assertEquals(0, result.getSummary().lists);
+        assertEquals(0, result.getSummary().listItems);
+        assertEquals(0, result.getSummary().codeBlocks);
+    }
+
+    @Test
+    void rendersListChildrenLikeUpstream() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "# List Children",
+                "",
+                "- first paragraph",
+                "",
+                "  second paragraph ignored",
+                "",
+                "  - nested child",
+                "",
+                "      code ignored",
+                "",
+                "- second item"));
+        String documentXml = new String(unzip(result.getDocx()).get("word/document.xml"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("<w:t>first paragraph</w:t>"));
+        assertTrue(documentXml.contains("<w:t>nested child</w:t>"));
+        assertTrue(documentXml.contains("<w:t>second item</w:t>"));
+        assertFalse(documentXml.contains("second paragraph ignored"));
+        assertFalse(documentXml.contains("code ignored"));
+        assertEquals(2, result.getSummary().lists);
+        assertEquals(3, result.getSummary().listItems);
+        assertEquals(0, result.getSummary().paragraphs);
+        assertEquals(0, result.getSummary().codeBlocks);
+    }
+
+    @Test
+    void rendersHtmlBlockEdgesLikeUpstream() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "# HTML Edge",
+                "",
+                "<ins>Block underline</ins>",
+                "",
+                "<a href=\"https://example.com/html\">Block **link**</a>",
+                "",
+                "<br>",
+                "",
+                "Inline <ins>under **bold**</ins> and <a href=\"https://example.com/split\">split **link**</a>."));
+        String documentXml = new String(unzip(result.getDocx()).get("word/document.xml"), StandardCharsets.UTF_8);
+        String relsXml = new String(unzip(result.getDocx()).get("word/_rels/document.xml.rels"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("<w:u w:val=\"single\"/>"));
+        assertTrue(documentXml.contains("<w:b/><w:u w:val=\"single\"/>"));
+        assertTrue(documentXml.contains("<w:br/>"));
+        assertTrue(documentXml.contains("<w:hyperlink r:id=\"rId1\""));
+        assertTrue(documentXml.contains("<w:hyperlink r:id=\"rId2\""));
+        assertTrue(relsXml.contains("Target=\"https://example.com/html\" TargetMode=\"External\""));
+        assertTrue(relsXml.contains("Target=\"https://example.com/split\" TargetMode=\"External\""));
+        assertEquals(4, result.getSummary().paragraphs);
+        assertEquals(2, result.getSummary().links);
+        assertEquals(0, result.getSummary().unsupportedHtml);
+    }
+
+    @Test
+    void rendersTableEscapedPipeLikeUpstream() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "# Table Edge",
+                "",
+                "| Left | Center | Right | Pipe |",
+                "| :--- | :---: | ---: | --- |",
+                "| l | c | r | a \\| b |",
+                "| **bold** | plain | `code` | x |"));
+        String documentXml = new String(unzip(result.getDocx()).get("word/document.xml"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("<w:t>a | b</w:t>"));
+        assertFalse(documentXml.contains("<w:t>a \\</w:t>"));
+        assertTrue(documentXml.contains("<w:b/>"));
+        assertTrue(documentXml.contains("<w:rStyle w:val=\"CodeChar\"/>"));
+        assertEquals(1, result.getSummary().tables);
+        assertEquals(0, result.getSummary().paragraphs);
+    }
+
+    @Test
+    void ignoresLinkAndImageTitlesLikeUpstream() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "# Title Attr",
+                "",
+                "[Titled](https://example.com/title \"Link title\") and [Plain](https://example.com/plain).",
+                "",
+                "![Missing titled](missing-title.png \"Image title\")"));
+        String relsXml = new String(unzip(result.getDocx()).get("word/_rels/document.xml.rels"), StandardCharsets.UTF_8);
+
+        assertTrue(relsXml.contains("Target=\"https://example.com/title\" TargetMode=\"External\""));
+        assertFalse(relsXml.contains("Link title"));
+        assertEquals(2, result.getSummary().links);
+        assertEquals(1, result.getSummary().images);
+        assertEquals(1, result.getSummary().missingImages);
+        assertEquals("missing-title.png", result.getSummary().missingImageDetails.get(0).path);
+        assertEquals("Missing titled", result.getSummary().missingImageDetails.get(0).alt);
+    }
+
+    @Test
     void keepsComplexMarkdownSummaryStable() {
         String markdown = String.join("\n",
                 "---",
