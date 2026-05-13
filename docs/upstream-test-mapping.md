@@ -40,6 +40,7 @@
 | Supported HTML edge comparison | `scripts/compare-node-java-cli.sh` html-edge case | Summary and key DOCX XML diffs enforced |
 | GFM table edge comparison | `scripts/compare-node-java-cli.sh` table-edge case | Summary and key DOCX XML diffs enforced |
 | Link and image title attribute comparison | `scripts/compare-node-java-cli.sh` title-attr case | Summary and key DOCX XML diffs enforced |
+| Markdown -> DOCX -> Markdown cross-tool smoke | `scripts/roundtrip-md-docx-md.sh` | Uses `miku-md2docx-java` and `miku-docx2md-java`; generated Markdown and summary are compared against focused expected outputs |
 
 Focused verification:
 
@@ -47,4 +48,5 @@ Focused verification:
 mvn test
 mvn package
 scripts/compare-node-java-cli.sh
+scripts/roundtrip-md-docx-md.sh
 ```

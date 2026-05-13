@@ -14,6 +14,8 @@
 mvn test
 mvn package
 java -jar target/miku-md2docx-java-0.5.0.1.jar --version
+scripts/compare-node-java-cli.sh
+scripts/roundtrip-md-docx-md.sh
 ```
 
 ## Conversion Policy

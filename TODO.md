@@ -41,6 +41,8 @@ Important files to inspect first when resuming:
   `remark` / `remark-gfm` edge cases are found.
 - Decide whether the Java line scanner remains sufficient or whether a small Java AST/token layer is needed for the remaining cases.
 - Keep behavioral changes in `MarkdownRenderer`, `MarkdownBlockRenderer`, `InlineRenderer`, and related helpers; avoid growing `MikuMd2docxCore`.
+- Keep the focused Markdown -> DOCX -> Markdown round-trip smoke current with
+  `miku-docx2md-java` when conversion behavior changes.
 
 ## Packaging / Repo Checkpoint
 
@@ -49,6 +51,7 @@ Important files to inspect first when resuming:
   - `mvn test`
   - `mvn package`
   - `scripts/compare-node-java-cli.sh`
+  - `scripts/roundtrip-md-docx-md.sh`
 
 ## Completed In Current Java First-Cut
 
@@ -80,6 +83,8 @@ Important files to inspect first when resuming:
 - Added upstream-compatible supported HTML block/inline edge handling, including standalone `<br>` block paragraph style and split inline HTML with formatting, with Java tests and Node-vs-Java comparison coverage.
 - Added upstream-compatible GFM table alignment/escaped pipe behavior: alignment is not emitted in OOXML, and escaped pipes stay inside the cell, with Java tests and Node-vs-Java comparison coverage.
 - Added upstream-compatible link/image title attribute behavior: titles are not emitted in DOCX and are not included in relationship targets or image paths, with Java tests and Node-vs-Java comparison coverage.
+- Added a focused Markdown -> DOCX -> Markdown round-trip smoke script using
+  `miku-md2docx-java` and `miku-docx2md-java`.
 
 ## Out Of Initial Scope
 
