@@ -16,7 +16,7 @@ Recommended next step:
 1. Continue hardening feature parity against upstream fixtures and generated DOCX XML.
 2. Add focused Node-vs-Java comparison cases for the remaining remark / remark-gfm edge cases.
 3. Use the split renderer classes for the next targeted parity fixes instead of expanding `MikuMd2docxCore`.
-4. Commit the current helper-class split and parity coverage as one checkpoint before starting larger parser work.
+4. Treat the committed helper-class split and parity coverage as the current checkpoint before starting larger parser work.
 
 Important files to inspect first when resuming:
 
@@ -44,8 +44,8 @@ Important files to inspect first when resuming:
 
 ## Packaging / Repo Checkpoint
 
-- Review and commit the current uncommitted helper-class split, comparison script expansion, tests, and docs together.
-- After committing, rerun:
+- Helper-class split, comparison script expansion, tests, and docs have been committed as the current checkpoint.
+- Before the next parser / renderer change, rerun:
   - `mvn test`
   - `mvn package`
   - `scripts/compare-node-java-cli.sh`
