@@ -17,6 +17,17 @@
 - Port upstream parser and OOXML renderer behavior before claiming content
   parity.
 
+## 2026-05-17 Upstream Core/Node Follow-up
+
+- Checked local upstream `../miku-md2docx` at package version `0.8.0`, commit
+  `77b798a7848df8da841527446245ebed4029f0bb`.
+- Upstream main application now owns product core, CLI, and CLI release bundle;
+  browser UI files have been separated to `miku-md2docx-web`.
+- Upstream CLI imports the built runtime from `dist/core.js` and expanded
+  `--help` with Arguments, Required options, Examples, and Notes sections.
+- Updated Java runtime version to `0.8.0.1` and aligned Java CLI help text with
+  the upstream `0.8.0` structure while keeping jar-based examples.
+
 ## 2026-05-14 Follow-up
 
 - Expanded the Java core from a minimal placeholder into a first-cut

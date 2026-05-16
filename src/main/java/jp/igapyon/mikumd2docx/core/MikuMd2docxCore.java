@@ -1,7 +1,7 @@
 package jp.igapyon.mikumd2docx.core;
 
 public class MikuMd2docxCore {
-    public static final String VERSION = "0.5.0.1";
+    public static final String VERSION = "0.8.0.1";
 
     public Md2DocxResult convertMarkdownToDocx(String markdown) {
         return convertMarkdownToDocx(markdown, new Md2DocxOptions());

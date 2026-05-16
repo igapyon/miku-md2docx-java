@@ -96,7 +96,18 @@ Run:
 
 ```bash
 mvn test
+scripts/compare-node-java-cli.sh
+scripts/roundtrip-md-docx-md.sh
 ```
+
+Latest checked on 2026-05-17:
+
+- `mvn test`: 23 tests passed.
+- `mvn package`: passed through `scripts/compare-node-java-cli.sh`.
+- `scripts/compare-node-java-cli.sh`: passed against local upstream package
+  version `0.8.0`, commit `77b798a7848df8da841527446245ebed4029f0bb`.
+- `scripts/roundtrip-md-docx-md.sh`: passed with local
+  `../miku-docx2md-java/target/miku-docx2md-1.0.0.jar`.
 
 Latest checked on 2026-05-14:
 

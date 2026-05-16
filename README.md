@@ -19,20 +19,20 @@ mvn package
 Run:
 
 ```bash
-java -jar target/miku-md2docx-java-0.5.0.1.jar ./sample.md --out ./sample.docx
+java -jar target/miku-md2docx-java-0.8.0.1.jar ./sample.md --out ./sample.docx
 ```
 
 Summary output:
 
 ```bash
-java -jar target/miku-md2docx-java-0.5.0.1.jar ./sample.md --out ./sample.docx --summary
+java -jar target/miku-md2docx-java-0.8.0.1.jar ./sample.md --out ./sample.docx --summary
 ```
 
 Show help or version:
 
 ```bash
-java -jar target/miku-md2docx-java-0.5.0.1.jar --help
-java -jar target/miku-md2docx-java-0.5.0.1.jar --version
+java -jar target/miku-md2docx-java-0.8.0.1.jar --help
+java -jar target/miku-md2docx-java-0.8.0.1.jar --version
 ```
 
 ## Current Scope
@@ -42,7 +42,7 @@ java -jar target/miku-md2docx-java-0.5.0.1.jar --version
 - Test framework: JUnit Jupiter
 - Primary verification: `mvn test`
 - Runtime package: executable fat jar under `target/`
-- Distribution package: `target/miku-md2docx-java-0.5.0.1-dist.zip`
+- Distribution package: `target/miku-md2docx-java-0.8.0.1-dist.zip`
 - Maven plugin: out of initial scope
 
 The current implementation is a first Java runtime skeleton with a thin CLI,
@@ -58,7 +58,7 @@ GitHub Release asset workflow support is provided by
 
 - Upstream Node.js / TypeScript repository: <https://github.com/igapyon/miku-md2docx>
 - Upstream branch and compatibility source: `devel` HEAD
-- Upstream snapshot checked locally: tag `v0.5.0.1`, commit `5fa828a984c6929d0911fde62ebb44d81f92c9a7`
+- Upstream snapshot checked locally: package version `0.8.0`, commit `77b798a7848df8da841527446245ebed4029f0bb`
 - Local upstream checkout used for inventory: `../miku-md2docx`
 - Primary sister Java project used as repository-shape reference: `../miku-docx2md-java`
 - Additional same-layer sister references available locally: `../miku-xlsx2md-java`, `../miku-indexgen-java`, `../mikuproject-java`
