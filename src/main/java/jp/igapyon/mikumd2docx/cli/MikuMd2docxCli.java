@@ -77,13 +77,30 @@ public class MikuMd2docxCli {
                 + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar --help\n"
                 + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar --version\n"
                 + "\n"
+                + "Arguments:\n"
+                + "  <input.md>            Markdown input file. Required for conversion.\n"
+                + "\n"
+                + "Required options:\n"
+                + "  --out <file>          DOCX output file. Required for conversion.\n"
+                + "\n"
                 + "Options:\n"
-                + "  --out <file>          Write DOCX output to file\n"
                 + "  --summary             Print conversion summary to stdout\n"
                 + "  --summary-out <file>  Write conversion summary to file\n"
                 + "  --verbose             Print progress diagnostics to stderr\n"
                 + "  --help                Show this help\n"
-                + "  --version             Show version\n";
+                + "  --version             Show version\n"
+                + "\n"
+                + "Examples:\n"
+                + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx\n"
+                + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx --summary\n"
+                + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx --summary-out README.summary.txt\n"
+                + "\n"
+                + "Notes:\n"
+                + "  Local images are resolved relative to the input Markdown file.\n"
+                + "  Remote image URLs are not downloaded.\n"
+                + "  Missing images and unresolved internal links are reported in the summary\n"
+                + "  without aborting conversion.\n"
+                + "  If <input.md> or --out is missing, the command exits with code 2.\n";
     }
 
     private Md2DocxOptions.ImageLoader createImageLoader(final Path inputPath) {

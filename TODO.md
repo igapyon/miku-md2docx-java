@@ -1,15 +1,20 @@
 # TODO
 
-## Resume Note 2026-05-14
+## Resume Note 2026-05-17
 
 Current state:
 
 - Java straight conversion has progressed beyond the initial skeleton into a first-cut runtime conversion.
 - Maven plugin support remains intentionally out of scope.
+- Upstream `miku-md2docx` core/CLI follow-up has been checked at package
+  version `0.8.0`, commit `77b798a7848df8da841527446245ebed4029f0bb`.
+- Java runtime version is now `0.8.0.1`; CLI help follows the upstream `0.8.0`
+  Arguments / Required options / Examples / Notes structure.
 - Latest verification:
-  - `mvn test`: 11 tests passed.
+  - `mvn test`: 23 tests passed.
   - `mvn package`: passed.
-  - `scripts/compare-node-java-cli.sh`: passed; sample Node and Java summary outputs matched.
+  - `scripts/compare-node-java-cli.sh`: passed; focused Node and Java summary / key DOCX XML outputs matched.
+  - `scripts/roundtrip-md-docx-md.sh`: passed with local `../miku-docx2md-java` jar.
 
 Recommended next step:
 

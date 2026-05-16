@@ -19,11 +19,16 @@ class MikuMd2docxCliTest {
         MikuMd2docxCli cli = new MikuMd2docxCli();
 
         assertEquals(0, cli.run(new String[] {"--version"}, stream(out), stream(err)));
-        assertTrue(out.toString().contains("0.5.0.1"));
+        assertTrue(out.toString().contains("0.8.0.1"));
 
         out.reset();
         assertEquals(0, cli.run(new String[] {"--help"}, stream(out), stream(err)));
-        assertTrue(out.toString().contains("Usage:"));
+        String help = out.toString();
+        assertTrue(help.contains("Usage:"));
+        assertTrue(help.contains("Arguments:"));
+        assertTrue(help.contains("Required options:"));
+        assertTrue(help.contains("Local images are resolved relative to the input Markdown file."));
+        assertTrue(help.contains("exits with code 2"));
     }
 
     @Test

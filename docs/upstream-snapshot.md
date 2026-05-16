@@ -6,6 +6,8 @@
 - Upstream branch: `devel`
 - Snapshot tag checked during initial Java repository creation: `v0.5.0.1`
 - Snapshot commit checked during initial Java repository creation: `5fa828a984c6929d0911fde62ebb44d81f92c9a7`
+- Latest upstream follow-up checked locally: package version `0.8.0`, commit `77b798a7848df8da841527446245ebed4029f0bb`
+- Latest upstream change summary: Web App files separated to `miku-md2docx-web`; main application keeps product core, CLI, and CLI release bundle; CLI help text was expanded.
 - Local upstream checkout used for inventory: `../miku-md2docx`
 - Upstream reference method: local checkout, not vendored
 

@@ -3,8 +3,8 @@ set -eu
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 WORK_DIR="${ROOT_DIR}/target/roundtrip-md-docx-md"
-MD2DOCX_JAR="${MD2DOCX_JAR:-${ROOT_DIR}/target/miku-md2docx-java-0.5.0.1.jar}"
-DOCX2MD_JAR="${DOCX2MD_JAR:-${ROOT_DIR}/../miku-docx2md-java/miku-docx2md/target/miku-docx2md-0.9.0.jar}"
+MD2DOCX_JAR="${MD2DOCX_JAR:-${ROOT_DIR}/target/miku-md2docx-java-0.8.0.1.jar}"
+DOCX2MD_JAR="${DOCX2MD_JAR:-${ROOT_DIR}/../miku-docx2md-java/target/miku-docx2md-1.0.0.jar}"
 
 if [ "${SKIP_BUILD:-false}" != "true" ]; then
   (cd "${ROOT_DIR}" && mvn -q package)
