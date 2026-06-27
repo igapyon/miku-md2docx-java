@@ -12,10 +12,30 @@
 
 ## Pending Upstream Checks
 
-- Compare Java CLI stdout, stderr, exit codes, and generated `.docx` package
-  entries against upstream `scripts/miku-md2docx-cli.mjs`.
-- Port upstream parser and OOXML renderer behavior before claiming content
-  parity.
+- Continue adding focused parser / renderer parity cases when upstream
+  `remark` / `remark-gfm` edge cases are found.
+- Re-check `miku-ms-office-core` / `miku-ms-office-core-java` versions before
+  future package-helper changes.
+
+## 2026-06-28 Upstream 0.9.1 Package-Core Follow-Up
+
+- Checked public upstream `miku-md2docx` `devel` at package version `0.9.1`,
+  commit `4d024794fa91d44174a76abb114aba3731768077`.
+- Upstream now uses vendored `miku-ms-office-core` `0.5.1` for DOCX package
+  writing, and CLI / bundle version checks follow package metadata.
+- Updated Java runtime version to `0.9.1`.
+- Vendored `miku-ms-office-core-java` `0.5.1` release jar under
+  `vendor/miku-ms-office-core-java/` with SHA-256 recorded in the vendor
+  README.
+- Added Maven antrun unpack wiring during `generate-sources`, following the
+  `miku-md2xlsx-java` same-layer pattern.
+- Replaced product-neutral package plumbing with shared Office core helpers:
+  `XmlHelper`, `OpcRelationships`, `OpcContentTypes`, and `ZipPackage`.
+- Kept DOCX document assembly, Word-specific templates, Markdown conversion
+  semantics, and summary policy in this repository.
+- Verified with `mvn test`, `mvn package`, `scripts/compare-node-java-cli.sh`,
+  `scripts/roundtrip-md-docx-md.sh`, jar `--version`, and jar contents check
+  for bundled `jp/igapyon/mikumsofficecore` classes.
 
 ## 2026-05-17 Upstream Core/Node Follow-up
 

@@ -4,7 +4,8 @@ set -eu
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 UPSTREAM_DIR="${UPSTREAM_DIR:-${ROOT_DIR}/../miku-md2docx}"
 WORK_DIR="${ROOT_DIR}/target/node-java-cli"
-JAVA_JAR="${ROOT_DIR}/target/miku-md2docx-java-0.8.0.1.jar"
+PROJECT_VERSION=$(sed -n 's:.*<version>\([^<]*\)</version>.*:\1:p' "${ROOT_DIR}/pom.xml" | head -n 1)
+JAVA_JAR="${ROOT_DIR}/target/miku-md2docx-java-${PROJECT_VERSION}.jar"
 NODE_CLI="${UPSTREAM_DIR}/scripts/miku-md2docx-cli.mjs"
 
 mkdir -p "${WORK_DIR}"

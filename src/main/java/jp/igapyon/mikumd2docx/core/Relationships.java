@@ -1,24 +1,30 @@
 package jp.igapyon.mikumd2docx.core;
 
+import java.util.ArrayList;
 import java.util.List;
+import jp.igapyon.mikumsofficecore.OpcRelationship;
+import jp.igapyon.mikumsofficecore.OpcRelationships;
 
 final class Relationships {
     static final String REL_HYPERLINK = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
     static final String REL_IMAGE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
+    private static final String REL_STYLES = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles";
+    private static final String REL_NUMBERING = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering";
 
     private Relationships() {
     }
 
     static String documentRelsXml(List<Relationship> relationships) {
-        StringBuilder rels = new StringBuilder();
-        rels.append("<Relationship Id=\"rIdStyles\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>");
-        rels.append("<Relationship Id=\"rIdNumbering\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering\" Target=\"numbering.xml\"/>");
+        List<OpcRelationship> rels = new ArrayList<OpcRelationship>();
+        rels.add(new OpcRelationship("rIdStyles", REL_STYLES, "styles.xml"));
+        rels.add(new OpcRelationship("rIdNumbering", REL_NUMBERING, "numbering.xml"));
         for (Relationship rel : relationships) {
-            String mode = rel.targetMode == null ? "" : " TargetMode=\"" + XmlUtils.escapeAttr(rel.targetMode) + "\"";
-            rels.append("<Relationship Id=\"").append(rel.id).append("\" Type=\"").append(XmlUtils.escapeAttr(rel.type)).append("\" Target=\"")
-                    .append(XmlUtils.escapeAttr(rel.target)).append("\"").append(mode).append("/>");
+            if (rel.targetMode == null) {
+                rels.add(new OpcRelationship(rel.id, rel.type, rel.target));
+            } else {
+                rels.add(new OpcRelationship(rel.id, rel.type, rel.target, rel.targetMode));
+            }
         }
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-                + "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" + rels + "</Relationships>";
+        return OpcRelationships.buildOpcRelationshipsXml(rels);
     }
 }

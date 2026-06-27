@@ -11,9 +11,9 @@ npm run cli -- --version
 Java CLI:
 
 ```bash
-java -jar target/miku-md2docx-java-0.8.0.1.jar <input.md> --out <output.docx>
-java -jar target/miku-md2docx-java-0.8.0.1.jar --help
-java -jar target/miku-md2docx-java-0.8.0.1.jar --version
+java -jar target/miku-md2docx-java-0.9.1.jar <input.md> --out <output.docx>
+java -jar target/miku-md2docx-java-0.9.1.jar --help
+java -jar target/miku-md2docx-java-0.9.1.jar --version
 ```
 
 | Upstream option | Java option | Status |
@@ -28,9 +28,8 @@ java -jar target/miku-md2docx-java-0.8.0.1.jar --version
 
 Current notes:
 
-- Java version prints `0.8.0.1`, tracking upstream package version `0.8.0`
-  with the Java compatibility suffix.
-- Java help text follows the upstream `0.8.0` section structure and adapts the
+- Java version prints `0.9.1`, tracking upstream package version `0.9.1`.
+- Java help text follows the upstream `0.9.1` section structure and adapts the
   examples to the executable jar form.
 - Focused Node-vs-Java DOCX and summary parity checks are maintained in
   `scripts/compare-node-java-cli.sh`.

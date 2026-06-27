@@ -1,18 +1,20 @@
 package jp.igapyon.mikumd2docx.core;
 
+import jp.igapyon.mikumsofficecore.XmlHelper;
+
 final class XmlUtils {
     private XmlUtils() {
     }
 
     static String escapeXml(String text) {
-        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+        return XmlHelper.escapeXmlText(text == null ? "" : text);
     }
 
     static String escapeAttr(String text) {
-        return escapeXml(text).replace("\"", "&quot;");
+        return XmlHelper.escapeXmlAttribute(text == null ? "" : text);
     }
 
     static String stripHtml(String text) {
-        return text.replaceAll("<[^>]*>", "");
+        return text == null ? "" : text.replaceAll("<[^>]*>", "");
     }
 }

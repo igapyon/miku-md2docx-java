@@ -10,12 +10,29 @@ future Java class groups.
 | `src/ts/core.ts` | `jp.igapyon.mikumd2docx.core.MikuMd2docxCore` | Callable API facade implemented |
 | `src/ts/types.ts` | `Md2DocxResult`, `Md2DocxSummary` | Initial result and summary model implemented |
 | `src/ts/markdown-parser.ts` | `MarkdownRenderer`, `MarkdownBlockRenderer`, `MarkdownText` line-oriented parser helpers | Split out from core; setext / break / reference / escape / entity / blockquote / list child / HTML edge / table edge / title attribute parity started; full remark parity pending |
-| `src/ts/docx-package.ts` | `DocxPackageBuilder` | Split out from core |
+| `src/ts/docx-package.ts` | `DocxPackageBuilder`, `jp.igapyon.mikumsofficecore` | Split out from core; ZIP/OPC content type helpers follow upstream `miku-ms-office-core` 0.5.1 |
 | `src/ts/docx-templates.ts` | `DocxPackageBuilder` template methods | Split out from core |
 | `src/ts/ooxml-primitives.ts` | `OoxmlPrimitives`, `RunStyle` | Split out from core |
 | `src/ts/ooxml-*.ts` | `MarkdownBlockRenderer`, `InlineRenderer`, `OoxmlPrimitives` | First-cut block / inline / GFM autolink / link / image / escape / entity / blockquote / list child / HTML edge / table edge / title attribute behavior implemented |
 | `src/ts/image-assets.ts` | `ImageAsset`, `Md2DocxOptions.ImageLoader`, `ImageAssets` | Split out from core |
-| `src/ts/relationships.ts` | `Relationship`, `Relationships` | Split out from core |
+| `src/ts/relationships.ts` | `Relationship`, `Relationships`, `jp.igapyon.mikumsofficecore.OpcRelationships` | Split out from core; XML generation uses shared Office core |
 | `src/ts/summary.ts` | `SummaryFormatter`, `Md2DocxSummary` | Split out from core |
-| `src/ts/xml-utils.ts` | `XmlUtils` | Split out from core |
-| `src/ts/zip-io.ts` | ZIP writing in `DocxPackageBuilder` | Split out from core |
+| `src/ts/xml-utils.ts` | `XmlUtils`, `jp.igapyon.mikumsofficecore.XmlHelper` | Split out from core; escaping uses shared Office core |
+| `src/ts/zip-io.ts`, `src/vendor/miku-ms-office-core-0.5.1.mjs` | `jp.igapyon.mikumsofficecore.ZipPackage` | Deterministic ZIP entry order and timestamps now come from shared Office core |
+
+## miku-ms-office-core-java Integration
+
+`miku-ms-office-core-java` is the expected Java owner for product-neutral Office
+package plumbing. Use the `miku-md2xlsx-java` managed vendored release jar
+pattern instead of depending on Maven repository publication: track the release
+jar under
+`vendor/miku-ms-office-core-java/`, document its release and SHA-256, and unpack
+it during Maven `generate-sources`.
+
+| Current local class / area | Shared Office core target | Status |
+| --- | --- | --- |
+| `XmlUtils` | `jp.igapyon.mikumsofficecore.XmlHelper` | XML escaping delegates to shared Office core; HTML stripping remains local. |
+| `Relationship`, `Relationships` | `OpcRelationship`, `OpcRelationships` | Relationship XML generation delegates to shared Office core; DOCX relationship type constants remain local. |
+| `[Content_Types].xml` handling in `DocxPackageBuilder` | `OpcContentTypes` | Content type XML generation delegates to shared Office core; DOCX content type policy remains local. |
+| DOCX package part paths | Office core OPC normalization through `ZipPackage` / `OpcContentTypes` | Product-specific entry names remain local. |
+| ZIP writing in `DocxPackageBuilder` | `ZipPackage`, `ZipEntryInput` | DOCX package ZIP writing delegates to shared Office core. |
