@@ -3,7 +3,8 @@ set -eu
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 WORK_DIR="${ROOT_DIR}/target/roundtrip-md-docx-md"
-MD2DOCX_JAR="${MD2DOCX_JAR:-${ROOT_DIR}/target/miku-md2docx-java-0.8.0.1.jar}"
+PROJECT_VERSION=$(sed -n 's:.*<version>\([^<]*\)</version>.*:\1:p' "${ROOT_DIR}/pom.xml" | head -n 1)
+MD2DOCX_JAR="${MD2DOCX_JAR:-${ROOT_DIR}/target/miku-md2docx-java-${PROJECT_VERSION}.jar}"
 DOCX2MD_JAR="${DOCX2MD_JAR:-${ROOT_DIR}/../miku-docx2md-java/target/miku-docx2md-1.0.0.jar}"
 
 if [ "${SKIP_BUILD:-false}" != "true" ]; then

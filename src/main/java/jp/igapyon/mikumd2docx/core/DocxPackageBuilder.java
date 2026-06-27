@@ -1,15 +1,19 @@
 package jp.igapyon.mikumd2docx.core;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import jp.igapyon.mikumsofficecore.OpcContentTypeDefault;
+import jp.igapyon.mikumsofficecore.OpcContentTypeOverride;
+import jp.igapyon.mikumsofficecore.OpcContentTypes;
+import jp.igapyon.mikumsofficecore.OpcRelationship;
+import jp.igapyon.mikumsofficecore.OpcRelationships;
+import jp.igapyon.mikumsofficecore.ZipEntryInput;
+import jp.igapyon.mikumsofficecore.ZipPackage;
 
 final class DocxPackageBuilder {
     private DocxPackageBuilder() {
@@ -28,37 +32,19 @@ final class DocxPackageBuilder {
     }
 
     static byte[] createDocx(String documentXml, List<Relationship> relationships, Map<String, byte[]> imageMedia) {
-        try {
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            ZipOutputStream zip = new ZipOutputStream(bytes);
-            add(zip, "[Content_Types].xml", contentTypesXml(imageMedia.keySet()));
-            add(zip, "_rels/.rels", rootRelsXml());
-            add(zip, "docProps/app.xml", appXml());
-            add(zip, "docProps/core.xml", coreXml());
-            add(zip, "word/document.xml", documentXml);
-            add(zip, "word/_rels/document.xml.rels", Relationships.documentRelsXml(relationships));
-            add(zip, "word/styles.xml", stylesXml());
-            add(zip, "word/numbering.xml", numberingXml());
-            for (Map.Entry<String, byte[]> image : imageMedia.entrySet()) {
-                add(zip, image.getKey(), image.getValue());
-            }
-            zip.close();
-            return bytes.toByteArray();
-        } catch (IOException ex) {
-            throw new IllegalStateException("DOCX package creation failed", ex);
+        List<ZipEntryInput> entries = new ArrayList<ZipEntryInput>();
+        entries.add(new ZipEntryInput("[Content_Types].xml", contentTypesXml(imageMedia.keySet())));
+        entries.add(new ZipEntryInput("_rels/.rels", rootRelsXml()));
+        entries.add(new ZipEntryInput("docProps/app.xml", appXml()));
+        entries.add(new ZipEntryInput("docProps/core.xml", coreXml()));
+        entries.add(new ZipEntryInput("word/document.xml", documentXml));
+        entries.add(new ZipEntryInput("word/_rels/document.xml.rels", Relationships.documentRelsXml(relationships)));
+        entries.add(new ZipEntryInput("word/styles.xml", stylesXml()));
+        entries.add(new ZipEntryInput("word/numbering.xml", numberingXml()));
+        for (Map.Entry<String, byte[]> image : imageMedia.entrySet()) {
+            entries.add(new ZipEntryInput(image.getKey(), image.getValue()));
         }
-    }
-
-    private static void add(ZipOutputStream zip, String name, String text) throws IOException {
-        add(zip, name, text.getBytes(StandardCharsets.UTF_8));
-    }
-
-    private static void add(ZipOutputStream zip, String name, byte[] data) throws IOException {
-        ZipEntry entry = new ZipEntry(name);
-        entry.setTime(0L);
-        zip.putNextEntry(entry);
-        zip.write(data);
-        zip.closeEntry();
+        return ZipPackage.writeZipPackage(entries);
     }
 
     private static String contentTypesXml(Set<String> imagePaths) {
@@ -74,28 +60,28 @@ final class DocxPackageBuilder {
                 defaults.add(path.substring(dot + 1).toLowerCase(Locale.ROOT));
             }
         }
-        StringBuilder imageDefaults = new StringBuilder();
+
+        List<OpcContentTypeDefault> contentTypeDefaults = new ArrayList<OpcContentTypeDefault>();
+        contentTypeDefaults.add(new OpcContentTypeDefault("rels", "application/vnd.openxmlformats-package.relationships+xml"));
+        contentTypeDefaults.add(new OpcContentTypeDefault("xml", "application/xml"));
         for (String ext : defaults) {
-            imageDefaults.append("<Default Extension=\"").append(XmlUtils.escapeAttr(ext)).append("\" ContentType=\"")
-                    .append(XmlUtils.escapeAttr(ImageAssets.contentTypeForExt(ext))).append("\"/>");
+            contentTypeDefaults.add(new OpcContentTypeDefault(ext, ImageAssets.contentTypeForExt(ext)));
         }
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-                + "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">"
-                + "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>"
-                + "<Default Extension=\"xml\" ContentType=\"application/xml\"/>" + imageDefaults
-                + "<Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>"
-                + "<Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>"
-                + "<Override PartName=\"/word/numbering.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/>"
-                + "<Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/>"
-                + "<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/>"
-                + "</Types>";
+
+        List<OpcContentTypeOverride> overrides = Arrays.asList(
+                new OpcContentTypeOverride("word/document.xml", "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"),
+                new OpcContentTypeOverride("word/styles.xml", "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"),
+                new OpcContentTypeOverride("word/numbering.xml", "application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"),
+                new OpcContentTypeOverride("docProps/core.xml", "application/vnd.openxmlformats-package.core-properties+xml"),
+                new OpcContentTypeOverride("docProps/app.xml", "application/vnd.openxmlformats-officedocument.extended-properties+xml"));
+        return OpcContentTypes.buildOpcContentTypesXml(new OpcContentTypes(contentTypeDefaults, overrides));
     }
 
     private static String rootRelsXml() {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-                + "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
-                + "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/>"
-                + "</Relationships>";
+        return OpcRelationships.buildOpcRelationshipsXml(Arrays.asList(
+                new OpcRelationship("rId1",
+                        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
+                        "word/document.xml")));
     }
 
     private static String appXml() {

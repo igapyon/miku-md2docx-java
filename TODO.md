@@ -1,5 +1,40 @@
 # TODO
 
+## AI Agent Current Tasks
+
+This section tracks active work items for AI agents.
+Update this section while working. Do not rewrite unrelated TODO items.
+
+### Tasks
+
+- [x] Create igapyon agent state files for the corrected implementation goal.
+- [x] Check the latest upstream Node `miku-md2docx` version / commit and record
+  the follow-up target.
+- [x] Compare current Java behavior and docs against the latest upstream Node
+  `miku-md2docx` state.
+- [x] Vendor `miku-ms-office-core-java` using the `miku-md2xlsx-java` managed
+  release jar pattern.
+- [x] Move appropriate product-neutral XML / OPC relationship / content type /
+  part path helpers to `miku-ms-office-core-java`.
+- [x] Move ZIP package writing to `miku-ms-office-core-java` after smaller
+  helper migrations are covered.
+- [x] Update README, TODO, mapping docs, decisions, and handoff to the
+  implemented state.
+- [x] Run relevant verification: `mvn test`, `mvn package`,
+  `scripts/compare-node-java-cli.sh`, and `scripts/roundtrip-md-docx-md.sh`
+  when prerequisites are available.
+
+### Blockers
+
+- None.
+
+### Retry Log
+
+Use this section only when the same task or error is repeated.
+If the same failure appears 3 times, stop and ask the user.
+
+- None.
+
 ## Resume Note 2026-05-17
 
 Current state:
@@ -7,14 +42,18 @@ Current state:
 - Java straight conversion has progressed beyond the initial skeleton into a first-cut runtime conversion.
 - Maven plugin support remains intentionally out of scope.
 - Upstream `miku-md2docx` core/CLI follow-up has been checked at package
-  version `0.8.0`, commit `77b798a7848df8da841527446245ebed4029f0bb`.
-- Java runtime version is now `0.8.0.1`; CLI help follows the upstream `0.8.0`
+  version `0.9.1`, commit `4d024794fa91d44174a76abb114aba3731768077`.
+- Java runtime version is now `0.9.1`; CLI help follows the upstream `0.9.1`
   Arguments / Required options / Examples / Notes structure.
+- `miku-ms-office-core-java` `0.5.1` is vendored under
+  `vendor/miku-ms-office-core-java/` and unpacked during Maven
+  `generate-sources`.
 - Latest verification:
   - `mvn test`: 23 tests passed.
   - `mvn package`: passed.
   - `scripts/compare-node-java-cli.sh`: passed; focused Node and Java summary / key DOCX XML outputs matched.
   - `scripts/roundtrip-md-docx-md.sh`: passed with local `../miku-docx2md-java` jar.
+  - `java -jar target/miku-md2docx-java-0.9.1.jar --version`: printed `0.9.1`.
 
 Recommended next step:
 
@@ -22,6 +61,8 @@ Recommended next step:
 2. Add focused Node-vs-Java comparison cases for the remaining remark / remark-gfm edge cases.
 3. Use the split renderer classes for the next targeted parity fixes instead of expanding `MikuMd2docxCore`.
 4. Treat the committed helper-class split and parity coverage as the current checkpoint before starting larger parser work.
+5. Keep the `miku-ms-office-core-java` vendored jar and upstream Node snapshot
+   current when either project publishes a new release.
 
 Important files to inspect first when resuming:
 
@@ -52,11 +93,38 @@ Important files to inspect first when resuming:
 ## Packaging / Repo Checkpoint
 
 - Helper-class split, comparison script expansion, tests, and docs have been committed as the current checkpoint.
+- `miku-ms-office-core-java` has been integrated using the `miku-md2xlsx-java`
+  pattern:
+  vendor the release jar under `vendor/miku-ms-office-core-java/`, record
+  release metadata and SHA-256, and unpack the jar during Maven
+  `generate-sources`.
 - Before the next parser / renderer change, rerun:
   - `mvn test`
   - `mvn package`
   - `scripts/compare-node-java-cli.sh`
   - `scripts/roundtrip-md-docx-md.sh`
+
+## miku-ms-office-core-java Integration
+
+- Treat `miku-ms-office-core-java` as the owner for
+  product-neutral ZIP / OPC / relationship / content type / XML helper behavior.
+- Keep DOCX document assembly, Markdown conversion semantics, Word-specific
+  templates, and summary policy in `miku-md2docx-java`.
+- Uses the managed vendored release jar workflow already used by
+  `miku-md2xlsx-java` over depending on Maven repository publication.
+- Implemented integration:
+  1. `vendor/miku-ms-office-core-java/miku-ms-office-core-0.5.1.jar`.
+  2. `vendor/miku-ms-office-core-java/README.md` records source repository,
+     release tag, jar file name, and SHA-256.
+  3. `miku.ms.office.core.version` and Maven antrun unpack wiring expand the
+     vendored jar into `${project.build.outputDirectory}` during
+     `generate-sources`.
+  4. `XmlUtils` delegates XML escaping to `XmlHelper`.
+  5. Relationship and content type XML generation delegate to `OpcRelationships`
+     and `OpcContentTypes`.
+  6. DOCX ZIP package writing delegates to `ZipPackage`.
+- Preserve the current Node-vs-Java comparison script as the regression gate
+  for every migration slice.
 
 ## Completed In Current Java First-Cut
 

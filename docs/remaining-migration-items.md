@@ -32,6 +32,9 @@ Recommended next implementation slice:
   checkpoint before starting larger parser changes.
 - Keep the focused Markdown -> DOCX -> Markdown smoke current as the first
   cross-tool round-trip guard.
+- Keep latest relevant upstream Node `miku-md2docx` state and
+  `miku-ms-office-core-java` integration current when upstream package helpers
+  evolve.
 
 ## Completed
 
@@ -67,7 +70,15 @@ Recommended next implementation slice:
 - Focused Markdown -> DOCX -> Markdown round-trip smoke script using
   `miku-docx2md-java` as the reverse converter.
 - Upstream class, CLI, and test mapping documents.
-- miku-soft basic documents copied into `docs/`.
+- Project-local miku-soft reference document added under `docs/`, replacing
+  copied shared basic documents.
+- Followed upstream Node `miku-md2docx` package version `0.9.1`, commit
+  `4d024794fa91d44174a76abb114aba3731768077`.
+- Vendored `miku-ms-office-core-java` `0.5.1` under
+  `vendor/miku-ms-office-core-java/` and unpack it during Maven
+  `generate-sources`.
+- Delegated product-neutral XML escaping, OPC relationship XML, OPC content
+  type XML, and ZIP package writing to `miku-ms-office-core-java`.
 
 ## Pending
 
@@ -85,10 +96,16 @@ Recommended next implementation slice:
   Java AST/token layer for remaining remark parity.
 - Helper-class split and focused parity coverage have been committed as the
   current checkpoint.
+- Keep staged adoption of `miku-ms-office-core-java` current for any future
+  product-neutral ZIP, OPC relationship, content type, part path, and XML helper
+  behavior. Keep DOCX assembly and Markdown conversion semantics in this
+  repository.
 
 ## Follow-up Candidates
 
 - Add Maven plugin support after runtime core and CLI parity are stable.
+- Re-check `miku-ms-office-core-java` release version before future package
+  helper changes.
 
 ## Latest Verification
 
@@ -99,6 +116,19 @@ mvn test
 scripts/compare-node-java-cli.sh
 scripts/roundtrip-md-docx-md.sh
 ```
+
+Latest checked on 2026-06-28:
+
+- `mvn test`: 23 tests passed.
+- `mvn package`: passed.
+- `scripts/compare-node-java-cli.sh`: passed against upstream Node package
+  version `0.9.1`, commit `4d024794fa91d44174a76abb114aba3731768077`.
+- `scripts/roundtrip-md-docx-md.sh`: passed with local
+  `../miku-docx2md-java/target/miku-docx2md-1.0.0.jar`.
+- `java -jar target/miku-md2docx-java-0.9.1.jar --version`: printed `0.9.1`.
+- `target/miku-md2docx-java-0.9.1.jar` contains
+  `jp/igapyon/mikumsofficecore/ZipPackage.class`,
+  `OpcRelationships.class`, `OpcContentTypes.class`, and `XmlHelper.class`.
 
 Latest checked on 2026-05-17:
 
