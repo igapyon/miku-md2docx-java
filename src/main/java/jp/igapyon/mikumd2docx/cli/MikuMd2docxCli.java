@@ -46,6 +46,9 @@ public class MikuMd2docxCli {
             String markdown = new String(Files.readAllBytes(Paths.get(options.inputPath)), StandardCharsets.UTF_8);
             MikuMd2docxCore core = new MikuMd2docxCore();
             Md2DocxOptions convertOptions = new Md2DocxOptions();
+            if (options.templatePath != null) {
+                convertOptions.setTemplateDocx(Files.readAllBytes(Paths.get(options.templatePath)));
+            }
             convertOptions.setImageLoader(createImageLoader(Paths.get(options.inputPath)));
             Md2DocxResult result = core.convertMarkdownToDocx(markdown, convertOptions);
             Files.write(Paths.get(options.outPath), result.getDocx());
@@ -86,21 +89,49 @@ public class MikuMd2docxCli {
                 + "Options:\n"
                 + "  --summary             Print conversion summary to stdout\n"
                 + "  --summary-out <file>  Write conversion summary to file\n"
+                + "  --template <docx>     Reuse compatible DOCX template package parts\n"
                 + "  --verbose             Print progress diagnostics to stderr\n"
                 + "  --help                Show this help\n"
                 + "  --version             Show version\n"
                 + "\n"
+                + "Inputs:\n"
+                + "  <input.md> is read as UTF-8 Markdown. Local images are resolved relative to\n"
+                + "  the input Markdown file.\n"
+                + "\n"
+                + "Outputs:\n"
+                + "  --out <file> is the generated editable Word .docx file. Summary output is\n"
+                + "  written only when --summary or --summary-out is specified.\n"
+                + "\n"
+                + "Overwrite behavior:\n"
+                + "  Existing --out and --summary-out files are overwritten.\n"
+                + "\n"
+                + "Diagnostics:\n"
+                + "  CLI usage errors and unexpected runtime errors are written to stderr.\n"
+                + "  Missing images, remote image URLs, unresolved internal links, and unsupported\n"
+                + "  HTML are reported in the summary without aborting conversion.\n"
+                + "\n"
+                + "Exit codes:\n"
+                + "  0  success, --help, or --version\n"
+                + "  1  conversion or file-system failure\n"
+                + "  2  invalid CLI usage, such as missing <input.md> or --out\n"
+                + "\n"
                 + "Examples:\n"
                 + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx\n"
+                + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx --template template.docx\n"
                 + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx --summary\n"
                 + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx --summary-out README.summary.txt\n"
                 + "\n"
-                + "Notes:\n"
-                + "  Local images are resolved relative to the input Markdown file.\n"
+                + "Template notes:\n"
+                + "  Template mode replaces the template document body with generated Markdown\n"
+                + "  content while preserving compatible package parts where practical.\n"
+                + "  Template styles and section settings may carry over; numbering is regenerated.\n"
+                + "  Existing template body paragraphs are not copied.\n"
+                + "  Header and footer references are not carried over in the first cut.\n"
+                + "\n"
+                + "Markdown handling notes:\n"
                 + "  Remote image URLs are not downloaded.\n"
-                + "  Missing images and unresolved internal links are reported in the summary\n"
-                + "  without aborting conversion.\n"
-                + "  If <input.md> or --out is missing, the command exits with code 2.\n";
+                + "  SVG images are not converted.\n"
+                + "  Table alignment and merged cells are ignored.\n";
     }
 
     private Md2DocxOptions.ImageLoader createImageLoader(final Path inputPath) {

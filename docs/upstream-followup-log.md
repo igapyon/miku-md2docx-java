@@ -17,6 +17,29 @@
 - Re-check `miku-ms-office-core` / `miku-ms-office-core-java` versions before
   future package-helper changes.
 
+## 2026-07-18 Upstream v1.0.0 Release Follow-Up
+
+- Fixed the compatibility source to upstream Release `v1.0.0`, package version
+  `1.0.0`, commit `65d26eaf67f37c126261031fd91409a6e6afa5a8`.
+- Compared the release against the previous Java compatibility source,
+  upstream `0.9.1` commit `4d024794fa91d44174a76abb114aba3731768077`.
+- Updated the Java runtime and Maven project version to `1.0.0`.
+- Added `word/settings.xml`, its document relationship/content type, and Word
+  compatibility mode 15 to the default DOCX package.
+- Added structural DOCX template reuse through `Md2DocxOptions.templateDocx`
+  and CLI `--template <docx>`: generated Markdown replaces the template body;
+  compatible package parts, app properties, styles, content types, settings,
+  and section properties are preserved where practical; header/footer
+  references are removed; numbering and document relationships are regenerated.
+- Added upstream `remoteImages` / `remoteImageDetails` summary behavior so
+  remote URLs remain counted as missing without entering local
+  `missingImageDetails`.
+- Extended `scripts/compare-node-java-cli.sh` to compare `word/settings.xml`
+  for every case and added focused remote-image and template-mode cases.
+- Verified `mvn test` with 24 passing tests, `mvn package`, full Node-vs-Java
+  comparison against the `v1.0.0` checkout, and the focused Markdown -> DOCX
+  -> Markdown round-trip.
+
 ## 2026-06-28 Upstream 0.9.1 Package-Core Follow-Up
 
 - Checked public upstream `miku-md2docx` `devel` at package version `0.9.1`,

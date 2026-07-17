@@ -21,6 +21,7 @@ final class SummaryFormatter {
         builder.append("images: ").append(summary.images).append('\n');
         builder.append("embeddedImages: ").append(summary.embeddedImages).append('\n');
         builder.append("missingImages: ").append(summary.missingImages).append('\n');
+        builder.append("remoteImages: ").append(summary.remoteImages).append('\n');
         builder.append("resizedImages: ").append(summary.resizedImages).append('\n');
         builder.append("frontMatter: ").append(summary.frontMatter).append('\n');
         builder.append("unsupportedHtml: ").append(summary.unsupportedHtml).append('\n');
@@ -28,6 +29,13 @@ final class SummaryFormatter {
             builder.append("missingImageDetails:\n");
             for (Md2DocxSummary.MissingImageDetail detail : summary.missingImageDetails) {
                 builder.append("- path: ").append(detail.path).append('\n');
+                builder.append("  alt: ").append(detail.alt).append('\n');
+            }
+        }
+        if (!summary.remoteImageDetails.isEmpty()) {
+            builder.append("remoteImageDetails:\n");
+            for (Md2DocxSummary.RemoteImageDetail detail : summary.remoteImageDetails) {
+                builder.append("- url: ").append(detail.url).append('\n');
                 builder.append("  alt: ").append(detail.alt).append('\n');
             }
         }

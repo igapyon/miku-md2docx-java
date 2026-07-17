@@ -19,20 +19,26 @@ mvn package
 Run:
 
 ```bash
-java -jar target/miku-md2docx-java-0.9.1.jar ./sample.md --out ./sample.docx
+java -jar target/miku-md2docx-java-1.0.0.jar ./sample.md --out ./sample.docx
 ```
 
 Summary output:
 
 ```bash
-java -jar target/miku-md2docx-java-0.9.1.jar ./sample.md --out ./sample.docx --summary
+java -jar target/miku-md2docx-java-1.0.0.jar ./sample.md --out ./sample.docx --summary
+```
+
+Template reuse:
+
+```bash
+java -jar target/miku-md2docx-java-1.0.0.jar ./sample.md --out ./sample.docx --template ./template.docx
 ```
 
 Show help or version:
 
 ```bash
-java -jar target/miku-md2docx-java-0.9.1.jar --help
-java -jar target/miku-md2docx-java-0.9.1.jar --version
+java -jar target/miku-md2docx-java-1.0.0.jar --help
+java -jar target/miku-md2docx-java-1.0.0.jar --version
 ```
 
 ## Current Scope
@@ -42,13 +48,13 @@ java -jar target/miku-md2docx-java-0.9.1.jar --version
 - Test framework: JUnit Jupiter
 - Primary verification: `mvn test`
 - Runtime package: executable fat jar under `target/`
-- Distribution package: `target/miku-md2docx-java-0.9.1-dist.zip`
+- Distribution package: `target/miku-md2docx-java-1.0.0-dist.zip`
 - Maven plugin: out of initial scope
 
-The current implementation is a first Java runtime skeleton with a thin CLI,
-minimal DOCX package generation, and upstream vocabulary for the summary
-fields. Full Markdown-to-OOXML parity with upstream remains a tracked migration
-item.
+The current implementation follows upstream release `v1.0.0`, including
+minimal DOCX settings with Word compatibility mode 15, remote-image summary
+details, and structural DOCX template reuse. Full `remark` edge-case parity
+remains a tracked migration item.
 
 GitHub Release asset workflow support is provided by
 `.github/workflows/release-cli-runtime.yml`. It builds from `v*` tags or manual
@@ -57,9 +63,9 @@ GitHub Release asset workflow support is provided by
 ## Upstream And Sister Reference
 
 - Upstream Node.js / TypeScript repository: <https://github.com/igapyon/miku-md2docx>
-- Upstream branch and compatibility source: `devel` HEAD
-- Upstream snapshot checked locally: package version `0.9.1`, commit `4d024794fa91d44174a76abb114aba3731768077`
-- Local upstream checkout used for inventory: `../miku-md2docx`
+- Upstream compatibility source: release tag `v1.0.0`
+- Upstream snapshot checked locally: package version `1.0.0`, commit `65d26eaf67f37c126261031fd91409a6e6afa5a8`
+- Local upstream checkout used for comparison: `workplace/upstream-miku-md2docx-v1.0.0`
 - Primary sister Java project used as repository-shape reference: `../miku-docx2md-java`
 - Additional same-layer sister references available locally: `../miku-xlsx2md-java`, `../miku-indexgen-java`, `../mikuproject-java`
 

@@ -185,6 +185,12 @@ final class InlineRenderer {
 
     private static String renderImage(String path, String alt, RenderState state) {
         state.summary.images++;
+        if (path != null && path.matches("(?i)^[a-z][a-z0-9+.-]*://.*")) {
+            state.summary.missingImages++;
+            state.summary.remoteImages++;
+            state.summary.remoteImageDetails.add(new Md2DocxSummary.RemoteImageDetail(path, alt));
+            return OoxmlPrimitives.runXml("[Missing image: " + (alt == null || alt.isEmpty() ? path : alt) + "]", new RunStyle());
+        }
         ImageAsset asset = state.options.getImageLoader() == null ? null : state.options.getImageLoader().load(path);
         if (asset == null) {
             state.summary.missingImages++;

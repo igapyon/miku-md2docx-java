@@ -5,10 +5,13 @@
 | CLI prints version and help | `MikuMd2docxCliTest#printVersionAndHelp` | Implemented |
 | CLI converts Markdown file and writes DOCX | `MikuMd2docxCliTest#convertsMarkdownFile` | Implemented |
 | Core creates DOCX package entries | `MikuMd2docxCoreTest#createsDocxWithCoreEntriesAndSummary` | Implemented |
+| Default DOCX includes settings relationship/content type and compatibility mode 15 | `MikuMd2docxCoreTest#createsDocxWithCoreEntriesAndSummary` | Implemented |
+| DOCX template body replacement and compatible part/style/section/settings preservation | `MikuMd2docxCoreTest#usesDocxTemplateWhileReplacingDocumentBody` | Implemented |
 | Summary uses upstream vocabulary | `MikuMd2docxCoreTest#summaryFormatMatchesUpstreamVocabulary` | Implemented |
 | Output is reproducible for same input | `MikuMd2docxCoreTest#outputIsDeterministicForSameInput` | Implemented |
 | Representative OOXML for links, lists, tables, code blocks, quotes, rules | `MikuMd2docxCoreTest#rendersRepresentativeOoxmlForMarkdownStructures` | Implemented |
 | Local image bytes become media entries and drawing XML | `MikuMd2docxCoreTest#embedsProvidedLocalImageBytes` | Implemented |
+| Remote image URLs are separated from local missing-image details | `MikuMd2docxCoreTest#handlesImageFormatsRemoteImagesAndResizing` | Implemented |
 | GFM autolink literals become external links | `MikuMd2docxCoreTest#rendersGfmAutolinks` | Implemented |
 | Setext headings, soft line breaks, and hard breaks | `MikuMd2docxCoreTest#rendersSetextHeadingsAndMarkdownBreaks` | Implemented |
 | Tilde fenced code blocks | `MikuMd2docxCoreTest#rendersTildeFencedCodeBlocks` | Implemented |
@@ -40,6 +43,8 @@
 | Supported HTML edge comparison | `scripts/compare-node-java-cli.sh` html-edge case | Summary and key DOCX XML diffs enforced |
 | GFM table edge comparison | `scripts/compare-node-java-cli.sh` table-edge case | Summary and key DOCX XML diffs enforced |
 | Link and image title attribute comparison | `scripts/compare-node-java-cli.sh` title-attr case | Summary and key DOCX XML diffs enforced |
+| Remote-image summary comparison | `scripts/compare-node-java-cli.sh` remote-image case | Summary and key DOCX XML including settings enforced |
+| Template-mode package comparison | `scripts/compare-node-java-cli.sh` template case | Summary, content types, and key DOCX XML including settings enforced |
 | Markdown -> DOCX -> Markdown cross-tool smoke | `scripts/roundtrip-md-docx-md.sh` | Uses `miku-md2docx-java` and `miku-docx2md-java`; generated Markdown and summary are compared against focused expected outputs |
 
 Focused verification:

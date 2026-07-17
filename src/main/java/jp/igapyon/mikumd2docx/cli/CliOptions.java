@@ -3,6 +3,7 @@ package jp.igapyon.mikumd2docx.cli;
 class CliOptions {
     String inputPath;
     String outPath;
+    String templatePath;
     String summaryOutPath;
     boolean summary;
     boolean verbose;
@@ -23,6 +24,8 @@ class CliOptions {
                 options.outPath = requireValue(args, ++i, "--out");
             } else if ("--summary".equals(arg)) {
                 options.summary = true;
+            } else if ("--template".equals(arg)) {
+                options.templatePath = requireValue(args, ++i, "--template");
             } else if ("--summary-out".equals(arg)) {
                 options.summaryOutPath = requireValue(args, ++i, "--summary-out");
             } else if ("--verbose".equals(arg)) {

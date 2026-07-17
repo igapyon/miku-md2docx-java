@@ -14,16 +14,16 @@
 ```bash
 mvn test
 mvn package
-java -jar target/miku-md2docx-java-0.9.1.jar --version
+java -jar target/miku-md2docx-java-1.0.0.jar --version
 scripts/compare-node-java-cli.sh
 scripts/roundtrip-md-docx-md.sh
 ```
 
 ## Conversion Policy
 
-The compatibility source is upstream `miku-md2docx` `devel` HEAD. The latest
-local follow-up checked package version `0.9.1` at commit
-`4d024794fa91d44174a76abb114aba3731768077`.
+The compatibility source is upstream `miku-md2docx` release tag `v1.0.0`,
+package version `1.0.0`, commit
+`65d26eaf67f37c126261031fd91409a6e6afa5a8`.
 
 This repository starts with a Maven-plugin-free Java CLI runtime. Preserve
 upstream vocabulary and observable CLI behavior while porting implementation

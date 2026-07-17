@@ -7,6 +7,12 @@ Update this section while working. Do not rewrite unrelated TODO items.
 
 ### Tasks
 
+- [x] Fix the upstream compatibility source to Release `v1.0.0`.
+- [x] Compare upstream `v1.0.0` with the previous `0.9.1` compatibility commit.
+- [x] Port settings compatibility mode 15, DOCX template reuse, and remote-image
+  summary details to Java core and CLI.
+- [x] Extend Node-vs-Java checks for settings, remote images, and template mode.
+- [x] Update version, README, mappings, snapshot, follow-up, and migration docs.
 - [x] Create igapyon agent state files for the corrected implementation goal.
 - [x] Check the latest upstream Node `miku-md2docx` version / commit and record
   the follow-up target.
@@ -35,7 +41,31 @@ If the same failure appears 3 times, stop and ask the user.
 
 - None.
 
-## Resume Note 2026-05-17
+## Resume Note 2026-07-18
+
+Current state:
+
+- Java runtime and Maven project track upstream Release `v1.0.0`, commit
+  `65d26eaf67f37c126261031fd91409a6e6afa5a8`.
+- Default DOCX packages include `word/settings.xml` with Word compatibility
+  mode 15.
+- Core options and CLI support structural DOCX template reuse through
+  `templateDocx` / `--template <docx>`.
+- Remote image URLs use `remoteImages` / `remoteImageDetails` while remaining
+  included in `missingImages`.
+- Latest verification: 24 JUnit tests passed; Node-vs-Java summary and key
+  OOXML comparisons passed against the `v1.0.0` checkout, including settings,
+  remote-image, and template-mode cases; Maven packaging and the focused
+  Markdown -> DOCX -> Markdown round-trip passed.
+
+Recommended next step:
+
+1. Continue focused `remark` / `remark-gfm` parity hardening only when a new
+   upstream edge case is identified.
+2. Keep Release tags—not moving `devel` HEAD—as compatibility checkpoints.
+3. Keep Maven plugin support out of scope until runtime parity is judged stable.
+
+## Historical Resume Note 2026-05-17
 
 Current state:
 
