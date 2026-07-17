@@ -17,11 +17,15 @@ final class RenderState {
     final Map<String, Integer> headingRenderCounts = new HashMap<String, Integer>();
     final Set<String> knownBookmarks = new LinkedHashSet<String>();
     final Set<String> referenceDefinitions = new LinkedHashSet<String>();
+    final LoadedDocxTemplatePackage templatePackage;
     int nextRelId = 1;
     int nextDocPrId = 1;
 
     RenderState(Md2DocxOptions options) {
         this.options = options;
+        this.templatePackage = options.getTemplateDocx() == null
+                ? null
+                : LoadedDocxTemplatePackage.load(options.getTemplateDocx());
     }
 
     String nextHeadingBookmark(String headingText) {

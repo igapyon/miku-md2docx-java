@@ -79,6 +79,12 @@ Recommended next implementation slice:
   `generate-sources`.
 - Delegated product-neutral XML escaping, OPC relationship XML, OPC content
   type XML, and ZIP package writing to `miku-ms-office-core-java`.
+- Followed upstream release `v1.0.0`, package version `1.0.0`, commit
+  `65d26eaf67f37c126261031fd91409a6e6afa5a8`.
+- Added `word/settings.xml` with Word compatibility mode 15.
+- Added structural DOCX template reuse through core options and CLI
+  `--template <docx>`.
+- Added `remoteImages` and `remoteImageDetails` summary parity.
 
 ## Pending
 
@@ -117,7 +123,19 @@ scripts/compare-node-java-cli.sh
 scripts/roundtrip-md-docx-md.sh
 ```
 
-Latest checked on 2026-06-28:
+Latest checked on 2026-07-18:
+
+- `mvn test`: 24 tests passed.
+- `mvn package`: passed through the Node-vs-Java comparison build.
+- `scripts/compare-node-java-cli.sh`: passed against upstream Release `v1.0.0`,
+  package version `1.0.0`, commit
+  `65d26eaf67f37c126261031fd91409a6e6afa5a8`; settings, remote-image, and
+  template-mode comparisons are enforced.
+- `scripts/roundtrip-md-docx-md.sh`: passed with local
+  `../miku-docx2md-java/target/miku-docx2md-1.0.0.jar`.
+- `java -jar target/miku-md2docx-java-1.0.0.jar --version`: prints `1.0.0`.
+
+Previously checked on 2026-06-28:
 
 - `mvn test`: 23 tests passed.
 - `mvn package`: passed.

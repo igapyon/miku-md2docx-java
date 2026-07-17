@@ -266,6 +266,22 @@ cat > "${TITLE_ATTR_DIR}/title-attr.md" <<'MARKDOWN'
 ![Missing titled](missing-title.png "Image title")
 MARKDOWN
 
+REMOTE_IMAGE_DIR="${WORK_DIR}/remote-image-source"
+mkdir -p "${REMOTE_IMAGE_DIR}"
+cat > "${REMOTE_IMAGE_DIR}/remote-image.md" <<'MARKDOWN'
+# Remote Image
+
+![Remote](https://example.com/image.png)
+MARKDOWN
+
+TEMPLATE_DIR="${WORK_DIR}/template-source"
+mkdir -p "${TEMPLATE_DIR}"
+cat > "${TEMPLATE_DIR}/template.md" <<'MARKDOWN'
+# Template Body
+
+Template paragraph.
+MARKDOWN
+
 node "${NODE_CLI}" --version > "${WORK_DIR}/node-version.txt"
 java -jar "${JAVA_JAR}" --version > "${WORK_DIR}/java-version.txt"
 
@@ -324,6 +340,7 @@ compare_case() {
   compare_xml_entry "${case_dir}" "word/_rels/document.xml.rels"
   compare_xml_entry "${case_dir}" "word/styles.xml"
   compare_xml_entry "${case_dir}" "word/numbering.xml"
+  compare_xml_entry "${case_dir}" "word/settings.xml"
   if [ "$#" -gt 0 ]; then
     compare_xml_entry "${case_dir}" "[Content_Types].xml"
   fi
@@ -336,6 +353,25 @@ compare_case() {
   printf '%s\n' "${case_name} Java summary:"
   cat "${case_dir}/java-summary.txt"
   printf '%s\n' "Wrote ${case_name} comparison artifacts to ${case_dir}"
+}
+
+compare_template_case() {
+  case_dir="${WORK_DIR}/template"
+  xml_diff_dir="${case_dir}/xml-diff"
+  mkdir -p "${xml_diff_dir}"
+
+  node "${NODE_CLI}" "${TEMPLATE_DIR}/template.md" --out "${case_dir}/template.docx"
+  node "${NODE_CLI}" "${WORK_DIR}/sample.md" --out "${case_dir}/node.docx" --template "${case_dir}/template.docx" --summary > "${case_dir}/node-summary.txt"
+  java -jar "${JAVA_JAR}" "${WORK_DIR}/sample.md" --out "${case_dir}/java.docx" --template "${case_dir}/template.docx" --summary > "${case_dir}/java-summary.txt"
+
+  diff -u "${case_dir}/node-summary.txt" "${case_dir}/java-summary.txt" > "${case_dir}/summary.diff"
+  compare_xml_entry "${case_dir}" "word/document.xml"
+  compare_xml_entry "${case_dir}" "word/_rels/document.xml.rels"
+  compare_xml_entry "${case_dir}" "word/styles.xml"
+  compare_xml_entry "${case_dir}" "word/numbering.xml"
+  compare_xml_entry "${case_dir}" "word/settings.xml"
+  compare_xml_entry "${case_dir}" "[Content_Types].xml"
+  printf '%s\n' "Wrote template comparison artifacts to ${case_dir}"
 }
 
 compare_case "representative" "${WORK_DIR}/sample.md"
@@ -361,5 +397,7 @@ compare_case "list-children" "${LIST_CHILDREN_DIR}/list-children.md"
 compare_case "html-edge" "${HTML_EDGE_DIR}/html-edge.md"
 compare_case "table-edge" "${TABLE_EDGE_DIR}/table-edge.md"
 compare_case "title-attr" "${TITLE_ATTR_DIR}/title-attr.md"
+compare_case "remote-image" "${REMOTE_IMAGE_DIR}/remote-image.md"
+compare_template_case
 
 printf '%s\n' "Wrote comparison artifacts to ${WORK_DIR}"

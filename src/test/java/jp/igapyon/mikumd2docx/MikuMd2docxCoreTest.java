@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -16,6 +18,8 @@ import jp.igapyon.mikumd2docx.core.Md2DocxResult;
 import jp.igapyon.mikumd2docx.core.Md2DocxOptions;
 import jp.igapyon.mikumd2docx.core.ImageAsset;
 import jp.igapyon.mikumd2docx.core.MikuMd2docxCore;
+import jp.igapyon.mikumsofficecore.ZipEntryInput;
+import jp.igapyon.mikumsofficecore.ZipPackage;
 import org.junit.jupiter.api.Test;
 
 class MikuMd2docxCoreTest {
@@ -28,7 +32,11 @@ class MikuMd2docxCoreTest {
         assertTrue(entries.containsKey("[Content_Types].xml"));
         assertTrue(entries.containsKey("word/document.xml"));
         assertTrue(entries.containsKey("word/styles.xml"));
+        assertTrue(entries.containsKey("word/settings.xml"));
         assertTrue(new String(entries.get("word/document.xml"), StandardCharsets.UTF_8).contains("Heading1"));
+        assertTrue(new String(entries.get("word/settings.xml"), StandardCharsets.UTF_8).contains("w:val=\"15\""));
+        assertTrue(new String(entries.get("word/_rels/document.xml.rels"), StandardCharsets.UTF_8).contains("relationships/settings"));
+        assertTrue(new String(entries.get("[Content_Types].xml"), StandardCharsets.UTF_8).contains("/word/settings.xml"));
         assertEquals(1, result.getSummary().headings);
         assertEquals(1, result.getSummary().paragraphs);
         assertEquals(1, result.getSummary().externalLinks);
@@ -44,6 +52,51 @@ class MikuMd2docxCoreTest {
         assertTrue(summary.contains("images: 1"));
         assertTrue(summary.contains("missingImages: 1"));
         assertTrue(summary.contains("missingImageDetails:"));
+    }
+
+    @Test
+    void usesDocxTemplateWhileReplacingDocumentBody() throws IOException {
+        MikuMd2docxCore core = new MikuMd2docxCore();
+        Map<String, byte[]> baseEntries = unzip(core.convertMarkdownToDocx("Template body").getDocx());
+        List<ZipEntryInput> templateEntries = new ArrayList<ZipEntryInput>();
+        for (Map.Entry<String, byte[]> entry : baseEntries.entrySet()) {
+            templateEntries.add(new ZipEntryInput(entry.getKey(), entry.getValue()));
+        }
+        String templateDocument = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+                + "<w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body>"
+                + "<w:p><w:r><w:t>Template body</w:t></w:r></w:p>"
+                + "<w:sectPr><w:headerReference r:id=\"rIdHeader\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"/>"
+                + "<w:pgSz w:w=\"15840\" w:h=\"12240\" w:orient=\"landscape\"/></w:sectPr></w:body></w:document>";
+        String templateStyles = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+                + "<w:styles xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"
+                + "<w:style w:type=\"paragraph\" w:styleId=\"TemplateOnly\"><w:name w:val=\"Template Only\"/></w:style></w:styles>";
+        String templateSettings = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+                + "<w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"
+                + "<w:zoom w:percent=\"90\"/><w:compat><w:compatSetting w:name=\"compatibilityMode\" "
+                + "w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"12\"/></w:compat></w:settings>";
+        templateEntries = ZipPackage.upsertZipEntry(templateEntries, new ZipEntryInput("word/document.xml", templateDocument));
+        templateEntries = ZipPackage.upsertZipEntry(templateEntries, new ZipEntryInput("word/styles.xml", templateStyles));
+        templateEntries = ZipPackage.upsertZipEntry(templateEntries, new ZipEntryInput("word/settings.xml", templateSettings));
+        templateEntries.add(new ZipEntryInput("customXml/item1.xml", "<template-marker/>"));
+
+        Md2DocxOptions options = new Md2DocxOptions();
+        options.setTemplateDocx(ZipPackage.writeZipPackage(templateEntries));
+        Map<String, byte[]> entries = unzip(core.convertMarkdownToDocx("# Generated\n\nText.", options).getDocx());
+        String documentXml = new String(entries.get("word/document.xml"), StandardCharsets.UTF_8);
+        String stylesXml = new String(entries.get("word/styles.xml"), StandardCharsets.UTF_8);
+        String settingsXml = new String(entries.get("word/settings.xml"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("Generated"));
+        assertFalse(documentXml.contains("Template body"));
+        assertTrue(documentXml.contains("w:orient=\"landscape\""));
+        assertFalse(documentXml.contains("headerReference"));
+        assertTrue(stylesXml.contains("w:styleId=\"TemplateOnly\""));
+        assertTrue(stylesXml.contains("w:styleId=\"Heading1\""));
+        assertTrue(stylesXml.contains("w:styleId=\"CodeChar\""));
+        assertTrue(settingsXml.contains("<w:zoom w:percent=\"90\"/>"));
+        assertTrue(settingsXml.contains("w:val=\"15\""));
+        assertFalse(settingsXml.contains("w:val=\"12\""));
+        assertEquals("<template-marker/>", new String(entries.get("customXml/item1.xml"), StandardCharsets.UTF_8));
     }
 
     @Test
@@ -170,6 +223,11 @@ class MikuMd2docxCoreTest {
         assertEquals(5, result.getSummary().images);
         assertEquals(4, result.getSummary().embeddedImages);
         assertEquals(1, result.getSummary().missingImages);
+        assertEquals(1, result.getSummary().remoteImages);
+        assertTrue(result.getSummary().missingImageDetails.isEmpty());
+        assertEquals(1, result.getSummary().remoteImageDetails.size());
+        assertEquals("https://example.com/image.png", result.getSummary().remoteImageDetails.get(0).url);
+        assertTrue(new MikuMd2docxCore().formatSummary(result.getSummary()).contains("remoteImageDetails:"));
     }
 
     @Test

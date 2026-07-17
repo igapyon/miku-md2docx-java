@@ -10,7 +10,7 @@ Shared reference source:
 Local installed reference used for the current maintenance pass:
 
 - Skill: `igapyon-miku-soft-developer`
-- Checked date: 2026-06-28
+- Checked date: 2026-07-18
 - Installed copy timestamp: 2026-06-24 14:03 local time
 - Skill commit: not available from the installed local copy
 - Main workflow: existing miku-soft maintenance workflow
