@@ -17,6 +17,28 @@
 - Re-check `miku-ms-office-core` / `miku-ms-office-core-java` versions before
   future package-helper changes.
 
+## 2026-07-18 Upstream v1.0.1 / Office Core v0.6.0 Follow-Up
+
+- Fixed the compatibility source to upstream Release `v1.0.1`, package version
+  `1.0.1`, commit `fc13a426ddc5e184d4f0b7b2c2f7c12efd5bc00a`.
+- Compared it with Release `v1.0.0`; the product change is the vendored
+  `miku-ms-office-core` update from `0.5.1` to `0.6.0` plus the product
+  version bump. No DOCX product contract or CLI option changed.
+- Replaced the vendored Java core with the published
+  `miku-ms-office-core-java` `v0.6.0` jar. Its SHA-256 is
+  `d25392727d9449e5001b9024b888f0ce09962c9fb977c18613731f37027b0a77`,
+  matching the GitHub Release asset digest.
+- Updated the Java runtime and Maven project version to `1.0.1`.
+- Added product-level regression coverage proving that generated OOXML retains
+  valid supplementary Unicode such as emoji and `𠮷`, while invalid isolated
+  surrogates and `U+FFFE` are removed.
+- Updated the round-trip smoke to request `miku-docx2md-java`
+  `--front-matter exclude` explicitly and aligned its non-debug summary
+  expectation with the current reverse-converter contract.
+- Verified 25 JUnit tests, Maven packaging, the full Node-vs-Java comparison,
+  the Markdown -> DOCX -> Markdown round-trip, runtime version output, and
+  packaged Office core `0.6.0` metadata.
+
 ## 2026-07-18 Upstream v1.0.0 Release Follow-Up
 
 - Fixed the compatibility source to upstream Release `v1.0.0`, package version

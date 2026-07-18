@@ -8,6 +8,7 @@
 | Default DOCX includes settings relationship/content type and compatibility mode 15 | `MikuMd2docxCoreTest#createsDocxWithCoreEntriesAndSummary` | Implemented |
 | DOCX template body replacement and compatible part/style/section/settings preservation | `MikuMd2docxCoreTest#usesDocxTemplateWhileReplacingDocumentBody` | Implemented |
 | Summary uses upstream vocabulary | `MikuMd2docxCoreTest#summaryFormatMatchesUpstreamVocabulary` | Implemented |
+| Vendored XML sanitizer preserves supplementary Unicode and removes invalid XML characters | `MikuMd2docxCoreTest#preservesSupplementaryUnicodeAndRemovesInvalidXmlCharacters` | Implemented |
 | Output is reproducible for same input | `MikuMd2docxCoreTest#outputIsDeterministicForSameInput` | Implemented |
 | Representative OOXML for links, lists, tables, code blocks, quotes, rules | `MikuMd2docxCoreTest#rendersRepresentativeOoxmlForMarkdownStructures` | Implemented |
 | Local image bytes become media entries and drawing XML | `MikuMd2docxCoreTest#embedsProvidedLocalImageBytes` | Implemented |

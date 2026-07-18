@@ -73,12 +73,13 @@ drawingLikeUnsupported: 0
 links: 0
 internalLinks: 0
 externalLinks: 0
-unsupportedElements: 1
-unsupportedCommentTraces: 1
+unsupportedElements: 0
+unsupportedCommentTraces: 0
 SUMMARY
 
 java -jar "${MD2DOCX_JAR}" "${SOURCE_MD}" --out "${DOCX_OUT}"
-java -jar "${DOCX2MD_JAR}" "${DOCX_OUT}" --out "${ACTUAL_MD}" --summary-out "${SUMMARY_OUT}"
+java -jar "${DOCX2MD_JAR}" "${DOCX_OUT}" --out "${ACTUAL_MD}" \
+  --front-matter exclude --summary-out "${SUMMARY_OUT}"
 
 awk '{ print }' "${EXPECTED_MD}" > "${WORK_DIR}/expected.normalized.md"
 awk '{ print }' "${ACTUAL_MD}" > "${WORK_DIR}/roundtrip.normalized.md"

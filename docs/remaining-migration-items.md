@@ -85,6 +85,11 @@ Recommended next implementation slice:
 - Added structural DOCX template reuse through core options and CLI
   `--template <docx>`.
 - Added `remoteImages` and `remoteImageDetails` summary parity.
+- Followed upstream release `v1.0.1`, package version `1.0.1`, commit
+  `fc13a426ddc5e184d4f0b7b2c2f7c12efd5bc00a`.
+- Updated the published vendored `miku-ms-office-core-java` jar to `v0.6.0`
+  and added product-level regression coverage for supplementary Unicode and
+  invalid XML character sanitization.
 
 ## Pending
 
@@ -125,15 +130,16 @@ scripts/roundtrip-md-docx-md.sh
 
 Latest checked on 2026-07-18:
 
-- `mvn test`: 24 tests passed.
+- `mvn test`: 25 tests passed.
 - `mvn package`: passed through the Node-vs-Java comparison build.
-- `scripts/compare-node-java-cli.sh`: passed against upstream Release `v1.0.0`,
-  package version `1.0.0`, commit
-  `65d26eaf67f37c126261031fd91409a6e6afa5a8`; settings, remote-image, and
+- `scripts/compare-node-java-cli.sh`: passed against upstream Release `v1.0.1`,
+  package version `1.0.1`, commit
+  `fc13a426ddc5e184d4f0b7b2c2f7c12efd5bc00a`; settings, remote-image, and
   template-mode comparisons are enforced.
 - `scripts/roundtrip-md-docx-md.sh`: passed with local
   `../miku-docx2md-java/target/miku-docx2md-1.0.0.jar`.
-- `java -jar target/miku-md2docx-java-1.0.0.jar --version`: prints `1.0.0`.
+- `java -jar target/miku-md2docx-java-1.0.1.jar --version`: prints `1.0.1`.
+- Packaged Maven metadata reports `miku-ms-office-core` `0.6.0`.
 
 Previously checked on 2026-06-28:
 
