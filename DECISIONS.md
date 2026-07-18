@@ -40,5 +40,5 @@ remain local to `miku-md2docx-java`.
 
 Result:
 The implementation follows this decision using `miku-ms-office-core-java`
-`0.5.1`, vendored under `vendor/miku-ms-office-core-java/`, with Maven antrun
+`0.6.0`, vendored under `vendor/miku-ms-office-core-java/`, with Maven antrun
 unpack during `generate-sources`.

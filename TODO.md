@@ -7,6 +7,13 @@ Update this section while working. Do not rewrite unrelated TODO items.
 
 ### Tasks
 
+- [x] Compare upstream Node Release `v1.0.1` with the previous `v1.0.0`
+  compatibility source.
+- [x] Replace vendored `miku-ms-office-core-java` `0.5.1` with published
+  Release `v0.6.0` and record its SHA-256.
+- [x] Add product-level supplementary Unicode XML regression coverage.
+- [x] Update the Java runtime, Maven project, README, mappings, snapshot,
+  follow-up, and migration docs to `1.0.1`.
 - [x] Fix the upstream compatibility source to Release `v1.0.0`.
 - [x] Compare upstream `v1.0.0` with the previous `0.9.1` compatibility commit.
 - [x] Port settings compatibility mode 15, DOCX template reuse, and remote-image
@@ -45,16 +52,19 @@ If the same failure appears 3 times, stop and ask the user.
 
 Current state:
 
-- Java runtime and Maven project track upstream Release `v1.0.0`, commit
-  `65d26eaf67f37c126261031fd91409a6e6afa5a8`.
+- Java runtime and Maven project track upstream Release `v1.0.1`, commit
+  `fc13a426ddc5e184d4f0b7b2c2f7c12efd5bc00a`.
+- Vendored `miku-ms-office-core-java` tracks published Release `v0.6.0`; XML
+  sanitization preserves valid supplementary Unicode and removes invalid XML
+  characters.
 - Default DOCX packages include `word/settings.xml` with Word compatibility
   mode 15.
 - Core options and CLI support structural DOCX template reuse through
   `templateDocx` / `--template <docx>`.
 - Remote image URLs use `remoteImages` / `remoteImageDetails` while remaining
   included in `missingImages`.
-- Latest verification: 24 JUnit tests passed; Node-vs-Java summary and key
-  OOXML comparisons passed against the `v1.0.0` checkout, including settings,
+- Latest verification: 25 JUnit tests passed; Node-vs-Java summary and key
+  OOXML comparisons passed against the `v1.0.1` checkout, including settings,
   remote-image, and template-mode cases; Maven packaging and the focused
   Markdown -> DOCX -> Markdown round-trip passed.
 
@@ -143,7 +153,7 @@ Important files to inspect first when resuming:
 - Uses the managed vendored release jar workflow already used by
   `miku-md2xlsx-java` over depending on Maven repository publication.
 - Implemented integration:
-  1. `vendor/miku-ms-office-core-java/miku-ms-office-core-0.5.1.jar`.
+  1. `vendor/miku-ms-office-core-java/miku-ms-office-core-0.6.0.jar`.
   2. `vendor/miku-ms-office-core-java/README.md` records source repository,
      release tag, jar file name, and SHA-256.
   3. `miku.ms.office.core.version` and Maven antrun unpack wiring expand the

@@ -44,6 +44,21 @@ class MikuMd2docxCoreTest {
     }
 
     @Test
+    void preservesSupplementaryUnicodeAndRemovesInvalidXmlCharacters() throws IOException {
+        String markdown = "Valid 😀 🐇 𠮷野家; invalid "
+                + Character.toString((char) 0xd800)
+                + Character.toString((char) 0xfffe)
+                + ".";
+
+        Map<String, byte[]> entries = unzip(new MikuMd2docxCore().convertMarkdownToDocx(markdown).getDocx());
+        String documentXml = new String(entries.get("word/document.xml"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("Valid 😀 🐇 𠮷野家; invalid ."));
+        assertFalse(documentXml.contains(Character.toString((char) 0xd800)));
+        assertFalse(documentXml.contains(Character.toString((char) 0xfffe)));
+    }
+
+    @Test
     void summaryFormatMatchesUpstreamVocabulary() {
         MikuMd2docxCore core = new MikuMd2docxCore();
         Md2DocxResult result = core.convertMarkdownToDocx("![Missing](missing.png)");

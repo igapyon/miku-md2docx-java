@@ -19,7 +19,7 @@ class MikuMd2docxCliTest {
         MikuMd2docxCli cli = new MikuMd2docxCli();
 
         assertEquals(0, cli.run(new String[] {"--version"}, stream(out), stream(err)));
-        assertTrue(out.toString().contains("1.0.0"));
+        assertTrue(out.toString().contains("1.0.1"));
 
         out.reset();
         assertEquals(0, cli.run(new String[] {"--help"}, stream(out), stream(err)));

@@ -46,8 +46,8 @@ README, and unpack the jar during Maven `generate-sources`.
 
 ## Stop
 
-- Stop and ask if the target `miku-ms-office-core-java` release version changes
-  from `0.5.1`.
+- Use the published `miku-ms-office-core-java` release selected by the current
+  upstream compatibility source and verify its release digest before adoption.
 - Stop and ask if ZIP byte/package parity would change before a focused
   regression command is agreed.
 - Stop and ask before removing product-specific DOCX assembly or Markdown

@@ -19,7 +19,7 @@ future Java class groups.
 | `src/ts/relationships.ts` | `Relationship`, `Relationships`, `jp.igapyon.mikumsofficecore.OpcRelationships` | Split out from core; XML generation uses shared Office core |
 | `src/ts/summary.ts` | `SummaryFormatter`, `Md2DocxSummary` | Summary fields implemented, including `remoteImages` and `remoteImageDetails` |
 | `src/ts/xml-utils.ts` | `XmlUtils`, `jp.igapyon.mikumsofficecore.XmlHelper` | Split out from core; escaping uses shared Office core |
-| `src/ts/zip-io.ts`, `src/vendor/miku-ms-office-core-0.5.1.mjs` | `jp.igapyon.mikumsofficecore.ZipPackage` | Deterministic ZIP entry order and timestamps now come from shared Office core |
+| `src/ts/zip-io.ts`, `src/vendor/miku-ms-office-core-0.6.0.mjs` | `jp.igapyon.mikumsofficecore.ZipPackage` | Deterministic ZIP entry order, timestamps, and XML 1.0 supplementary Unicode sanitization now come from shared Office core |
 
 ## miku-ms-office-core-java Integration
 
