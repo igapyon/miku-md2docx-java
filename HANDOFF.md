@@ -17,8 +17,8 @@ Keep it concise. Do not use this as a full work log or a replacement for `TODO.m
 
 ## Current State
 
-- Node `miku-md2docx` follow-up is updated to Release `v1.0.1`, package version
-  `1.0.1`, commit `fc13a426ddc5e184d4f0b7b2c2f7c12efd5bc00a`.
+- Node `miku-md2docx` follow-up is updated to Release `v1.1.0`, package version
+  `1.1.0`, commit `a25d302c742e6950183d60e0cda88f97bc65a265`.
 - `miku-ms-office-core-java` `0.6.0` is integrated using the
   `miku-md2xlsx-java` managed vendored release jar pattern.
 - Product-neutral XML escaping, OPC relationship XML, OPC content type XML, and
@@ -50,10 +50,12 @@ Keep it concise. Do not use this as a full work log or a replacement for `TODO.m
 
 ## Last Verification
 
-- `mvn test`: passed, 25 tests.
-- `scripts/compare-node-java-cli.sh`: passed against Node `v1.0.1`.
-- `mvn package`: passed as part of the comparison and round-trip scripts.
+- `mvn test`: passed, 27 tests.
+- `mvn package`: passed for base `1.1.0` and Release version `1.1.0.2`.
+- `scripts/compare-node-java-cli.sh`: passed against the published Node
+  `miku-md2docx-1.1.0.mjs` Release Asset.
 - `scripts/roundtrip-md-docx-md.sh`: passed with explicit front-matter
   exclusion for the current `miku-docx2md-java` contract.
-- `java -jar target/miku-md2docx-java-1.0.1.jar --version`: printed `1.0.1`.
+- Packaged runtime `--version` and help reflected `1.1.0` and the simulated
+  full Release version `1.1.0.2`.
 - Packaged core metadata reports `miku-ms-office-core` `0.6.0`.

@@ -6,7 +6,7 @@ UPSTREAM_DIR="${UPSTREAM_DIR:-${ROOT_DIR}/../miku-md2docx}"
 WORK_DIR="${ROOT_DIR}/target/node-java-cli"
 PROJECT_VERSION=$(sed -n 's:.*<version>\([^<]*\)</version>.*:\1:p' "${ROOT_DIR}/pom.xml" | head -n 1)
 JAVA_JAR="${ROOT_DIR}/target/miku-md2docx-java-${PROJECT_VERSION}.jar"
-NODE_CLI="${UPSTREAM_DIR}/scripts/miku-md2docx-cli.mjs"
+NODE_CLI="${NODE_CLI:-${UPSTREAM_DIR}/scripts/miku-md2docx-cli.mjs}"
 
 mkdir -p "${WORK_DIR}"
 
@@ -231,6 +231,18 @@ cat > "${LIST_CHILDREN_DIR}/list-children.md" <<'MARKDOWN'
 - second item
 MARKDOWN
 
+LIST_CONTINUATION_DIR="${WORK_DIR}/list-continuation-source"
+mkdir -p "${LIST_CONTINUATION_DIR}"
+cat > "${LIST_CONTINUATION_DIR}/list-continuation.md" <<'MARKDOWN'
+# List Continuation
+
+- Alpha first line
+  alpha continuation line
+
+1. First ordered item with `code`
+   ordered continuation line
+MARKDOWN
+
 HTML_EDGE_DIR="${WORK_DIR}/html-edge-source"
 mkdir -p "${HTML_EDGE_DIR}"
 cat > "${HTML_EDGE_DIR}/html-edge.md" <<'MARKDOWN'
@@ -394,6 +406,7 @@ compare_case "escapes-entities" "${ESCAPES_ENTITIES_DIR}/escapes-entities.md"
 compare_case "nested-blockquote" "${NESTED_BLOCKQUOTE_DIR}/nested-blockquote.md"
 compare_case "blockquote-children" "${BLOCKQUOTE_CHILDREN_DIR}/blockquote-children.md"
 compare_case "list-children" "${LIST_CHILDREN_DIR}/list-children.md"
+compare_case "list-continuation" "${LIST_CONTINUATION_DIR}/list-continuation.md"
 compare_case "html-edge" "${HTML_EDGE_DIR}/html-edge.md"
 compare_case "table-edge" "${TABLE_EDGE_DIR}/table-edge.md"
 compare_case "title-attr" "${TITLE_ATTR_DIR}/title-attr.md"

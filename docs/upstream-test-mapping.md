@@ -2,9 +2,13 @@
 
 | Upstream test intent | Java test | Status |
 | --- | --- | --- |
-| CLI prints version and help | `MikuMd2docxCliTest#printVersionAndHelp` | Implemented |
+| CLI prints version and help | `MikuMd2docxCliTest#printsVersionAndHelp` | Implemented |
 | CLI converts Markdown file and writes DOCX | `MikuMd2docxCliTest#convertsMarkdownFile` | Implemented |
+| CLI creates missing output/summary parent directories | `MikuMd2docxCliTest#convertsMarkdownFile` | Implemented |
+| CLI uses documented stdout/stderr roles and exit codes 1/2 for file and usage failures | `MikuMd2docxCliTest#usesDocumentedExitCodesAndStreams` | Implemented |
+| CLI rejects unknown short/long options and missing option values | `MikuMd2docxCliTest#usesDocumentedExitCodesAndStreams` | Implemented |
 | Core creates DOCX package entries | `MikuMd2docxCoreTest#createsDocxWithCoreEntriesAndSummary` | Implemented |
+| Normal and template-generated DOCX entries use ZIP DEFLATE | `MikuMd2docxCoreTest#createsDocxWithCoreEntriesAndSummary`, `#usesDocxTemplateWhileReplacingDocumentBody` | Implemented |
 | Default DOCX includes settings relationship/content type and compatibility mode 15 | `MikuMd2docxCoreTest#createsDocxWithCoreEntriesAndSummary` | Implemented |
 | DOCX template body replacement and compatible part/style/section/settings preservation | `MikuMd2docxCoreTest#usesDocxTemplateWhileReplacingDocumentBody` | Implemented |
 | Summary uses upstream vocabulary | `MikuMd2docxCoreTest#summaryFormatMatchesUpstreamVocabulary` | Implemented |
@@ -22,6 +26,7 @@
 | Nested blockquote paragraph grouping | `MikuMd2docxCoreTest#rendersNestedBlockquotesLikeUpstream` | Implemented |
 | Blockquote child list/code omission | `MikuMd2docxCoreTest#ignoresBlockquoteListAndCodeChildrenLikeUpstream` | Implemented |
 | List child nested-list rendering and paragraph/code omission | `MikuMd2docxCoreTest#rendersListChildrenLikeUpstream` | Implemented |
+| Bullet and ordered list first-paragraph continuation lines | `MikuMd2docxCoreTest#preservesContinuationLinesInBulletAndOrderedListItems` | Implemented |
 | Supported HTML block and split inline HTML edge cases | `MikuMd2docxCoreTest#rendersHtmlBlockEdgesLikeUpstream` | Implemented |
 | GFM table alignment and escaped pipe behavior | `MikuMd2docxCoreTest#rendersTableEscapedPipeLikeUpstream` | Implemented |
 | Link and image title attributes ignored in generated DOCX/path targets | `MikuMd2docxCoreTest#ignoresLinkAndImageTitlesLikeUpstream` | Implemented |
@@ -41,6 +46,7 @@
 | Nested blockquote comparison | `scripts/compare-node-java-cli.sh` nested-blockquote case | Summary and key DOCX XML diffs enforced |
 | Blockquote child list/code comparison | `scripts/compare-node-java-cli.sh` blockquote-children case | Summary and key DOCX XML diffs enforced |
 | List child comparison | `scripts/compare-node-java-cli.sh` list-children case | Summary and key DOCX XML diffs enforced |
+| List continuation comparison | `scripts/compare-node-java-cli.sh` list-continuation case | Summary and key DOCX XML diffs enforced |
 | Supported HTML edge comparison | `scripts/compare-node-java-cli.sh` html-edge case | Summary and key DOCX XML diffs enforced |
 | GFM table edge comparison | `scripts/compare-node-java-cli.sh` table-edge case | Summary and key DOCX XML diffs enforced |
 | Link and image title attribute comparison | `scripts/compare-node-java-cli.sh` title-attr case | Summary and key DOCX XML diffs enforced |

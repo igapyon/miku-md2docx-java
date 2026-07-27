@@ -36,10 +36,7 @@ jobs:
           java-version: "21"
           cache: maven
 
-      - name: Build
-        run: mvn -B package
-
-      - name: Prepare release assets
+      - name: Resolve release version
         env:
           TAG_NAME: ${{ github.event.inputs.tag_name || github.ref_name }}
         run: |
@@ -47,7 +44,9 @@ jobs:
           VERSION="${TAG_NAME#v}"
           ARTIFACT_ID="$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)"
           POM_VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+          echo "RELEASE_VERSION=${VERSION}" >> "${GITHUB_ENV}"
           echo "RELEASE_ARTIFACT_ID=${ARTIFACT_ID}" >> "${GITHUB_ENV}"
+          echo "RELEASE_POM_VERSION=${POM_VERSION}" >> "${GITHUB_ENV}"
           case "${VERSION}" in
             "${POM_VERSION}"|"${POM_VERSION}".*) ;;
             *)
@@ -56,9 +55,18 @@ jobs:
               ;;
           esac
 
+      - name: Build
+        run: mvn -B package -Dmiku.release.version="${RELEASE_VERSION}"
+
+      - name: Prepare release assets
+        run: |
+          set -euo pipefail
           mkdir -p release-assets
-          cp "${RUNTIME_TARGET_DIR}/${ARTIFACT_ID}-${POM_VERSION}.jar" "release-assets/${ARTIFACT_ID}-${VERSION}.jar"
-          cp "${RUNTIME_TARGET_DIR}/${ARTIFACT_ID}-${POM_VERSION}-sources.jar" "release-assets/${ARTIFACT_ID}-sources-${VERSION}.jar"
+          cp "${RUNTIME_TARGET_DIR}/${RELEASE_ARTIFACT_ID}-${RELEASE_POM_VERSION}.jar" \
+            "release-assets/${RELEASE_ARTIFACT_ID}-${RELEASE_VERSION}.jar"
+          cp "${RUNTIME_TARGET_DIR}/${RELEASE_ARTIFACT_ID}-${RELEASE_POM_VERSION}-sources.jar" \
+            "release-assets/${RELEASE_ARTIFACT_ID}-sources-${RELEASE_VERSION}.jar"
+          echo "RELEASE_RUNTIME_ASSET=release-assets/${RELEASE_ARTIFACT_ID}-${RELEASE_VERSION}.jar" >> "${GITHUB_ENV}"
 
       - name: Set up Java 8 for runtime verification
         uses: actions/setup-java@v4
@@ -69,7 +77,10 @@ jobs:
       - name: Verify CLI runtime asset
         run: |
           set -euo pipefail
-          java -jar release-assets/${RELEASE_ARTIFACT_ID}-[0-9]*.jar --version
+          ACTUAL_VERSION="$(java -jar "${RELEASE_RUNTIME_ASSET}" --version)"
+          test "${ACTUAL_VERSION}" = "${RELEASE_VERSION}"
+          java -jar "${RELEASE_RUNTIME_ASSET}" --help \
+            | grep -F "java -jar ${RELEASE_ARTIFACT_ID}-${RELEASE_VERSION}.jar"
 
       - name: Upload CLI runtime to GitHub Release
         uses: softprops/action-gh-release@v2

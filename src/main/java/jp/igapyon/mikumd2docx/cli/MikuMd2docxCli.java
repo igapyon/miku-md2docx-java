@@ -51,7 +51,9 @@ public class MikuMd2docxCli {
             }
             convertOptions.setImageLoader(createImageLoader(Paths.get(options.inputPath)));
             Md2DocxResult result = core.convertMarkdownToDocx(markdown, convertOptions);
-            Files.write(Paths.get(options.outPath), result.getDocx());
+            Path outputPath = Paths.get(options.outPath);
+            createParentDirectories(outputPath);
+            Files.write(outputPath, result.getDocx());
             if (options.verbose) {
                 err.println("verbose: wrote " + options.outPath);
             }
@@ -60,7 +62,9 @@ public class MikuMd2docxCli {
                 out.print(summary);
             }
             if (options.summaryOutPath != null) {
-                Files.write(Paths.get(options.summaryOutPath), summary.getBytes(StandardCharsets.UTF_8));
+                Path summaryOutputPath = Paths.get(options.summaryOutPath);
+                createParentDirectories(summaryOutputPath);
+                Files.write(summaryOutputPath, summary.getBytes(StandardCharsets.UTF_8));
             }
             return 0;
         } catch (IOException ex) {
@@ -76,9 +80,17 @@ public class MikuMd2docxCli {
         return "miku-md2docx " + MikuMd2docxCore.VERSION + "\n"
                 + "\n"
                 + "Usage:\n"
-                + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar <input.md> --out <output.docx>\n"
-                + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar --help\n"
-                + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar --version\n"
+                + "  java -jar miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar <input.md> --out <output.docx>\n"
+                + "  java -jar miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar --help\n"
+                + "  java -jar miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar --version\n"
+                + "\n"
+                + "Description:\n"
+                + "  Convert one UTF-8 Markdown file to one editable Word .docx file locally.\n"
+                + "\n"
+                + "Primary contract:\n"
+                + "  stdout  Human-readable summary only with --summary; help and version text\n"
+                + "  stderr  CLI usage errors, file or conversion failures, and --verbose progress\n"
+                + "  file    The generated .docx; optional human-readable summary text file\n"
                 + "\n"
                 + "Arguments:\n"
                 + "  <input.md>            Markdown input file. Required for conversion.\n"
@@ -100,13 +112,24 @@ public class MikuMd2docxCli {
                 + "\n"
                 + "Outputs:\n"
                 + "  --out <file> is the generated editable Word .docx file. Summary output is\n"
-                + "  written only when --summary or --summary-out is specified.\n"
+                + "  written only when --summary or --summary-out is specified. Missing parent\n"
+                + "  directories for --out and --summary-out are created automatically.\n"
+                + "\n"
+                + "Generated artifacts:\n"
+                + "  Conversion creates only the .docx given by --out and, when requested, the\n"
+                + "  summary text file given by --summary-out. Repository target/ contents are\n"
+                + "  development build artifacts, not conversion outputs.\n"
+                + "\n"
+                + "Machine-readable output contract:\n"
+                + "  The .docx file is the primary generated artifact. Summary output is\n"
+                + "  human-readable text and is not a stable machine-readable API.\n"
                 + "\n"
                 + "Overwrite behavior:\n"
                 + "  Existing --out and --summary-out files are overwritten.\n"
                 + "\n"
                 + "Diagnostics:\n"
-                + "  CLI usage errors and unexpected runtime errors are written to stderr.\n"
+                + "  CLI usage errors, file-system failures, conversion failures, and verbose\n"
+                + "  progress are written to stderr.\n"
                 + "  Missing images, remote image URLs, unresolved internal links, and unsupported\n"
                 + "  HTML are reported in the summary without aborting conversion.\n"
                 + "\n"
@@ -116,10 +139,10 @@ public class MikuMd2docxCli {
                 + "  2  invalid CLI usage, such as missing <input.md> or --out\n"
                 + "\n"
                 + "Examples:\n"
-                + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx\n"
-                + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx --template template.docx\n"
-                + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx --summary\n"
-                + "  java -jar target/miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx --summary-out README.summary.txt\n"
+                + "  java -jar miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx\n"
+                + "  java -jar miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx --template template.docx\n"
+                + "  java -jar miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out README.docx --summary\n"
+                + "  java -jar miku-md2docx-java-" + MikuMd2docxCore.VERSION + ".jar README.md --out generated/README.docx --summary-out generated/README.summary.txt\n"
                 + "\n"
                 + "Template notes:\n"
                 + "  Template mode replaces the template document body with generated Markdown\n"
@@ -132,6 +155,13 @@ public class MikuMd2docxCli {
                 + "  Remote image URLs are not downloaded.\n"
                 + "  SVG images are not converted.\n"
                 + "  Table alignment and merged cells are ignored.\n";
+    }
+
+    private void createParentDirectories(Path path) throws IOException {
+        Path parent = path.toAbsolutePath().normalize().getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
     }
 
     private Md2DocxOptions.ImageLoader createImageLoader(final Path inputPath) {

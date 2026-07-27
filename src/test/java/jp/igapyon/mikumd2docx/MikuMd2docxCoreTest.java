@@ -28,6 +28,7 @@ class MikuMd2docxCoreTest {
         MikuMd2docxCore core = new MikuMd2docxCore();
         Md2DocxResult result = core.convertMarkdownToDocx("# Title\n\nHello [site](https://example.com).");
         Map<String, byte[]> entries = unzip(result.getDocx());
+        assertAllEntriesDeflated(result.getDocx());
 
         assertTrue(entries.containsKey("[Content_Types].xml"));
         assertTrue(entries.containsKey("word/document.xml"));
@@ -96,7 +97,9 @@ class MikuMd2docxCoreTest {
 
         Md2DocxOptions options = new Md2DocxOptions();
         options.setTemplateDocx(ZipPackage.writeZipPackage(templateEntries));
-        Map<String, byte[]> entries = unzip(core.convertMarkdownToDocx("# Generated\n\nText.", options).getDocx());
+        Md2DocxResult result = core.convertMarkdownToDocx("# Generated\n\nText.", options);
+        assertAllEntriesDeflated(result.getDocx());
+        Map<String, byte[]> entries = unzip(result.getDocx());
         String documentXml = new String(entries.get("word/document.xml"), StandardCharsets.UTF_8);
         String stylesXml = new String(entries.get("word/styles.xml"), StandardCharsets.UTF_8);
         String settingsXml = new String(entries.get("word/settings.xml"), StandardCharsets.UTF_8);
@@ -493,6 +496,25 @@ class MikuMd2docxCoreTest {
     }
 
     @Test
+    void preservesContinuationLinesInBulletAndOrderedListItems() throws IOException {
+        Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
+                "- Alpha first line",
+                "  alpha continuation line",
+                "",
+                "1. First ordered item with `code`",
+                "   ordered continuation line"));
+        String documentXml = new String(unzip(result.getDocx()).get("word/document.xml"), StandardCharsets.UTF_8);
+
+        assertTrue(documentXml.contains("Alpha first line"));
+        assertTrue(documentXml.contains("alpha continuation line"));
+        assertTrue(documentXml.contains("First ordered item with "));
+        assertTrue(documentXml.contains("ordered continuation line"));
+        assertTrue(documentXml.contains("<w:rStyle w:val=\"CodeChar\"/>"));
+        assertEquals(2, result.getSummary().lists);
+        assertEquals(2, result.getSummary().listItems);
+    }
+
+    @Test
     void rendersHtmlBlockEdgesLikeUpstream() throws IOException {
         Md2DocxResult result = new MikuMd2docxCore().convertMarkdownToDocx(String.join("\n",
                 "# HTML Edge",
@@ -612,5 +634,16 @@ class MikuMd2docxCoreTest {
             entries.put(entry.getName(), out.toByteArray());
         }
         return entries;
+    }
+
+    private void assertAllEntriesDeflated(byte[] docx) throws IOException {
+        ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(docx));
+        ZipEntry entry;
+        int entryCount = 0;
+        while ((entry = zip.getNextEntry()) != null) {
+            assertEquals(ZipEntry.DEFLATED, entry.getMethod(), entry.getName());
+            entryCount++;
+        }
+        assertTrue(entryCount > 0);
     }
 }

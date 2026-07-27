@@ -17,6 +17,46 @@
 - Re-check `miku-ms-office-core` / `miku-ms-office-core-java` versions before
   future package-helper changes.
 
+## 2026-07-27 Upstream v1.1.0 CLI Contract Follow-Up
+
+- Fixed the compatibility source to upstream Release `v1.1.0`, package version
+  `1.1.0`, merge commit `a25d302c742e6950183d60e0cda88f97bc65a265`.
+- Compared it with `v1.0.1`; the upstream product changes are DEFLATE package
+  generation, Release Asset-oriented help, output-parent creation, explicit
+  CLI usage errors, and full Release-version propagation.
+- Updated the Java Maven/runtime version to `1.1.0`.
+- Aligned Java help with upstream Description, Primary contract, Generated
+  artifacts, Machine-readable output contract, diagnostics, and exit-code
+  sections.
+- Rejected both short and long unknown options with exit code `2`, and added
+  coverage for missing option values and missing input files.
+- Added Manifest-based complete Release-version propagation. A build with
+  `-Dmiku.release.version=1.1.0.2` reports `1.1.0.2` from `--version` and uses
+  `miku-md2docx-java-1.1.0.2.jar` throughout help.
+- Updated the Release workflow to resolve and validate the tag version before
+  building, embed it in the runtime JAR, and verify exact version/help output
+  before upload.
+- Verified the full Node-vs-Java summary and OOXML comparison against the
+  published upstream `miku-md2docx-1.1.0.mjs` Release Asset.
+
+## 2026-07-27 GitHub Issues #9 And #10 Follow-Up
+
+- Completed product-side DEFLATE selection for normal and template-generated
+  DOCX packages while retaining the shared Office core default.
+- Added tests that inspect every generated ZIP entry and require compression
+  method 8 (DEFLATE) for both generation paths.
+- Updated CLI help and README examples to use the downloaded Release asset
+  directly rather than source-tree-relative `target/` commands.
+- Added automatic parent-directory creation for `--out` and `--summary-out`.
+- Documented generated artifacts, human-readable summary behavior,
+  stdout/stderr roles, overwrite behavior, and exit codes.
+- Fixed unknown long options so they return invalid-usage exit code 2; the
+  subsequent upstream `v1.1.0` follow-up broadened this to short options.
+- Preserved same-paragraph continuation lines in bullet and ordered list
+  items, while retaining upstream behavior that omits additional paragraphs
+  after a blank line.
+- Added focused JUnit and Node-vs-Java summary/XML parity coverage.
+
 ## 2026-07-18 Upstream v1.0.1 / Office Core v0.6.0 Follow-Up
 
 - Fixed the compatibility source to upstream Release `v1.0.1`, package version

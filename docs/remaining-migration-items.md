@@ -57,6 +57,18 @@ Recommended next implementation slice:
 - Blockquote child list/code omission behavior that matches current upstream.
 - List child handling that matches current upstream: nested lists render, while
   additional paragraphs/code children are omitted.
+- First-paragraph continuation lines in bullet and ordered list items are
+  preserved, including inline code, with Node-vs-Java XML parity coverage.
+- Normal and template-generated DOCX packages use ZIP DEFLATE for every entry,
+  with focused regression coverage.
+- CLI help uses downloaded Release asset commands, documents generated
+  artifacts and stdout/stderr roles, and records the `0`/`1`/`2` exit-code
+  contract.
+- CLI output and summary parent directories are created automatically.
+- Upstream Release `v1.1.0` CLI contract sections, short/long unknown-option
+  handling, and file/usage exit-code coverage are aligned.
+- Complete dot-suffixed Release versions are embedded in the runtime JAR and
+  reflected by `--version`, help, and Release Asset names.
 - Supported HTML block/inline edge handling, including standalone `<br>` block
   paragraph style and split inline HTML formatting.
 - GFM table alignment / escaped pipe behavior: alignment is not emitted in
@@ -127,6 +139,21 @@ mvn test
 scripts/compare-node-java-cli.sh
 scripts/roundtrip-md-docx-md.sh
 ```
+
+Latest checked on 2026-07-27:
+
+- `mvn test`: 27 tests passed.
+- `mvn package`: passed for base version `1.1.0`.
+- `mvn package -Dmiku.release.version=1.1.0.2`: passed; packaged `--version`,
+  help, and Manifest used `1.1.0.2`.
+- Upstream compatibility source is Release `v1.1.0`, package version `1.1.0`,
+  commit `a25d302c742e6950183d60e0cda88f97bc65a265`.
+- `scripts/compare-node-java-cli.sh`: passed against the published
+  `miku-md2docx-1.1.0.mjs` Release Asset, including multiline list-item
+  continuation and template mode.
+- `scripts/roundtrip-md-docx-md.sh`: passed.
+- Packaged CLI smoke confirmed automatic parent-directory creation and
+  DEFLATE for all nine entries in a generated DOCX.
 
 Latest checked on 2026-07-18:
 

@@ -30,6 +30,8 @@ class CliOptions {
                 options.summaryOutPath = requireValue(args, ++i, "--summary-out");
             } else if ("--verbose".equals(arg)) {
                 options.verbose = true;
+            } else if (arg.startsWith("-")) {
+                throw new IllegalArgumentException("Unknown option: " + arg);
             } else if (options.inputPath == null) {
                 options.inputPath = arg;
             } else {
@@ -41,7 +43,7 @@ class CliOptions {
 
     private static String requireValue(String[] args, int index, String option) {
         if (index >= args.length || args[index].startsWith("--")) {
-            throw new IllegalArgumentException("Missing value for " + option);
+            throw new IllegalArgumentException(option + " requires a value.");
         }
         return args[index];
     }
