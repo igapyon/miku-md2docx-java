@@ -4,13 +4,19 @@
 
 - Upstream repository: <https://github.com/igapyon/miku-md2docx>
 - Upstream branch: `devel`
-- Current compatibility tag: `v1.0.1`
+- Current compatibility tag: `v1.1.0`
 - Snapshot tag checked during initial Java repository creation: `v0.5.0.1`
 - Snapshot commit checked during initial Java repository creation: `5fa828a984c6929d0911fde62ebb44d81f92c9a7`
-- Latest upstream follow-up checked locally: package version `1.0.1`, commit `fc13a426ddc5e184d4f0b7b2c2f7c12efd5bc00a`
-- Latest upstream change summary: vendored `miku-ms-office-core` `v0.6.0`, preserving valid supplementary Unicode in XML while removing invalid XML characters.
-- Local upstream checkout used for comparison: `../miku-md2docx`
-- Upstream reference method: local checkout, not vendored
+- Latest upstream follow-up checked publicly: package version `1.1.0`, commit `a25d302c742e6950183d60e0cda88f97bc65a265`
+- Latest upstream change summary: DEFLATE package generation, Release
+  Asset-oriented CLI contracts, automatic output-parent creation, separated
+  exit codes, and complete Release-version propagation.
+- Published upstream CLI used for the latest comparison:
+  `miku-md2docx-1.1.0.mjs`
+- Local upstream checkout used for unchanged fixtures and repository reference:
+  `../miku-md2docx`
+- Upstream reference method: published Release Asset plus local checkout, not
+  vendored
 
 ## Sister Reference
 

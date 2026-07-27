@@ -57,7 +57,13 @@ final class MarkdownBlockRenderer {
                 break;
             }
             String marker = matcher.group(2);
-            String value = matcher.group(3);
+            StringBuilder value = new StringBuilder(matcher.group(3));
+            int continuationIndent = matcher.group(1).length() + marker.length() + 1;
+            while (index + 1 < lines.length && isFirstParagraphContinuation(
+                    lines[index + 1], continuationIndent)) {
+                value.append('\n').append(lines[index + 1].trim());
+                index++;
+            }
             int level = Math.min(matcher.group(1).length() / 2, 2);
             boolean ordered = marker.endsWith(".");
             String listKey = level + ":" + ordered;
@@ -66,13 +72,13 @@ final class MarkdownBlockRenderer {
                 seenListKeys.add(listKey);
             }
             state.summary.listItems++;
-            Matcher task = Pattern.compile("^\\[( |x|X)]\\s+(.+)$").matcher(value);
+            Matcher task = Pattern.compile("^\\[( |x|X)]\\s+(.+)$", Pattern.DOTALL).matcher(value);
             String itemXml;
             if (task.matches()) {
                 itemXml = OoxmlPrimitives.runXml("[" + task.group(1).toLowerCase(Locale.ROOT) + "] ", new RunStyle())
                         + InlineRenderer.renderInline(task.group(2), state);
             } else {
-                itemXml = InlineRenderer.renderInline(value, state);
+                itemXml = InlineRenderer.renderInline(value.toString(), state);
             }
             body.append(OoxmlPrimitives.paragraphXml(itemXml, null, ordered ? "2" : "1", level));
             index++;
@@ -90,6 +96,17 @@ final class MarkdownBlockRenderer {
 
     private static boolean isIndentedListChild(String line) {
         return line.startsWith("  ") || line.startsWith("\t");
+    }
+
+    private static boolean isFirstParagraphContinuation(String line, int requiredIndent) {
+        if (line.trim().isEmpty() || LIST.matcher(line).matches() || line.startsWith("\t")) {
+            return false;
+        }
+        int indent = 0;
+        while (indent < line.length() && line.charAt(indent) == ' ') {
+            indent++;
+        }
+        return indent >= requiredIndent && indent < requiredIndent + 4;
     }
 
     static boolean isTableStart(String[] lines, int index) {

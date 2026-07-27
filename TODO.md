@@ -7,6 +7,13 @@ Update this section while working. Do not rewrite unrelated TODO items.
 
 ### Tasks
 
+- [x] Follow upstream Node Release `v1.1.0` and update the Java runtime,
+  CLI/help contract, exit-code tests, version, workflow, and documentation.
+- [x] Embed complete dot-suffixed Release versions in JAR `--version` and help.
+- [x] Complete GitHub Issue #10 with normal/template DEFLATE regression tests.
+- [x] Complete the `miku-md2docx-java` scope of GitHub Issue #9: Release asset
+  help, parent-directory creation, exit-code/stream contracts, generated
+  artifacts, and multiline list-item continuation parity.
 - [x] Compare upstream Node Release `v1.0.1` with the previous `v1.0.0`
   compatibility source.
 - [x] Replace vendored `miku-ms-office-core-java` `0.5.1` with published
@@ -47,6 +54,34 @@ Use this section only when the same task or error is repeated.
 If the same failure appears 3 times, stop and ask the user.
 
 - None.
+
+## Resume Note 2026-07-27
+
+Current state:
+
+- Java runtime and Maven project now track upstream Release `v1.1.0`, commit
+  `a25d302c742e6950183d60e0cda88f97bc65a265`.
+- GitHub Issues #9 and #10 are implemented locally.
+- Generated DOCX entries use ZIP DEFLATE for normal and template paths.
+- The CLI creates output parent directories, rejects unknown short and long
+  options with exit code 2, and documents Release asset execution and stream
+  contracts.
+- Release suffixes such as `1.1.0.2` are embedded in JAR version/help output.
+- Bullet and ordered list first-paragraph continuation lines match Node output.
+
+Latest verification:
+
+- `mvn test`: 27 tests passed.
+- `mvn package`: passed and produced the runtime jar, sources jar, and
+  distribution zip.
+- `mvn package -Dmiku.release.version=1.1.0.2`: passed; runtime version/help
+  and Manifest reported `1.1.0.2`.
+- `scripts/compare-node-java-cli.sh`: passed, including the new
+  `list-continuation` case, against the published upstream
+  `miku-md2docx-1.1.0.mjs` Release Asset.
+- `scripts/roundtrip-md-docx-md.sh`: passed.
+- Packaged CLI smoke: missing output parents were created and all nine
+  generated DOCX entries were reported as DEFLATE by `unzip`.
 
 ## Resume Note 2026-07-18
 

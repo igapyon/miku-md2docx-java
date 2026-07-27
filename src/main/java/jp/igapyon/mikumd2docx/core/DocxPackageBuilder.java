@@ -16,9 +16,11 @@ import jp.igapyon.mikumsofficecore.OpcContentTypeOverride;
 import jp.igapyon.mikumsofficecore.OpcContentTypes;
 import jp.igapyon.mikumsofficecore.OpcRelationship;
 import jp.igapyon.mikumsofficecore.OpcRelationships;
+import jp.igapyon.mikumsofficecore.ZipCompressionMethod;
 import jp.igapyon.mikumsofficecore.ZipEntry;
 import jp.igapyon.mikumsofficecore.ZipEntryInput;
 import jp.igapyon.mikumsofficecore.ZipPackage;
+import jp.igapyon.mikumsofficecore.ZipWriteOptions;
 
 final class DocxPackageBuilder {
     private DocxPackageBuilder() {
@@ -59,7 +61,8 @@ final class DocxPackageBuilder {
         for (Map.Entry<String, byte[]> image : state.imageMedia.entrySet()) {
             entries.add(new ZipEntryInput(image.getKey(), image.getValue()));
         }
-        return ZipPackage.writeZipPackage(entries);
+        return ZipPackage.writeZipPackage(entries,
+                new ZipWriteOptions().setCompression(ZipCompressionMethod.DEFLATE));
     }
 
     private static byte[] createTemplatedDocx(String documentXml, RenderState state) {
@@ -81,7 +84,8 @@ final class DocxPackageBuilder {
         for (Map.Entry<String, byte[]> image : state.imageMedia.entrySet()) {
             entries = upsert(entries, new ZipEntryInput(image.getKey(), image.getValue()));
         }
-        return ZipPackage.writeZipPackage(entries);
+        return ZipPackage.writeZipPackage(entries,
+                new ZipWriteOptions().setCompression(ZipCompressionMethod.DEFLATE));
     }
 
     private static String contentTypesXml(Set<String> imagePaths) {
